@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Lace Field Journal is a minimal newspaper-inspired personal photography archive with RAW-friendly uploads and immersive halftone poster views."
+    />
+    <title>Lace Field Journal — Personal Photography Archive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,700;6..72,800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="paper-grain" aria-hidden="true"></div>
+    <canvas id="laceCanvas" aria-hidden="true"></canvas>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Lace Field Journal home">
+        <span class="brand-mark"></span>
+        <span>Lace Field Journal</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="#portfolio">Archive</a>
+        <a href="#studio">Studio</a>
+        <button class="icon-button" id="textureToggle" type="button" aria-pressed="true" title="Toggle ink texture">
+          <span class="button-dot"></span>
+          <span class="sr-only">Toggle ink texture</span>
+        </button>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero-section" aria-labelledby="heroTitle">
+        <div class="newspaper-rule">
+          <span>Personal photography archive</span>
+          <span>RAW / HEIC / JPG ledger</span>
+          <span>Vol. 01</span>
+        </div>
+
+        <div class="hero-masthead">
+          <p class="micro-label">Front page</p>
+          <h1 id="heroTitle">Lace Field Journal</h1>
+          <p class="dateline">Photographs, field notes, quiet weather, and private negatives.</p>
+        </div>
+
+        <div class="hero-layout">
+          <article class="lead-story">
+            <p class="section-label">Lead story</p>
+            <h2>Images printed like evidence, edited with silence.</h2>
+            <p>
+              A simplified portfolio for personal photographic work. Each image reads as a small
+              newspaper section, then opens into a dense vintage poster page shaped by its own tone.
+            </p>
+          </article>
+
+          <figure class="hero-camera" id="heroPlate">
+            <img src="./assets/vintage-camera-newsprint.jpg" alt="Vintage camera and lens on aged newspaper" />
+            <figcaption>
+              <span>Optical desk</span>
+              <span>35mm / archived light</span>
+            </figcaption>
+          </figure>
+
+          <aside class="issue-notes" aria-label="Archive themes">
+            <p class="section-label">Departments</p>
+            <ul id="departmentList"></ul>
+          </aside>
+        </div>
+      </section>
+
+      <section class="portfolio-section" id="portfolio" aria-labelledby="portfolioTitle">
+        <div class="section-heading">
+          <p class="micro-label">Photographic record</p>
+          <h2 id="portfolioTitle">Archive Desk</h2>
+          <p>
+            Newsprint cards for human scenes, terrain, still life, motion, night studies, and
+            miscellaneous notes.
+          </p>
+        </div>
+
+        <div class="filter-bar" id="filterBar" aria-label="Filter portfolio categories"></div>
+        <div class="gallery-grid" id="galleryGrid" aria-live="polite"></div>
+      </section>
+
+      <section class="studio-section" id="studio" aria-labelledby="studioTitle">
+        <div class="section-heading studio-heading">
+          <p class="micro-label">Private studio</p>
+          <h2 id="studioTitle">Add a Photograph</h2>
+          <p>
+            Upload a web preview plus an optional RAW master. HEIC is accepted; if a browser cannot
+            preview it, the archive still stores it and shows a newspaper placeholder.
+          </p>
+        </div>
+
+        <form class="upload-panel" id="uploadForm">
+          <label class="drop-zone" for="imageInput">
+            <input
+              id="imageInput"
+              name="image"
+              type="file"
+              accept="image/*,.jpg,.jpeg,.png,.webp,.avif,.gif,.heic,.heif,image/heic,image/heif"
+              required
+            />
+            <span class="drop-title">Photograph file</span>
+            <span class="drop-copy">JPG, PNG, WebP, HEIC, HEIF</span>
+            <img id="previewImage" alt="" />
+          </label>
+
+          <label class="drop-zone raw-zone" for="rawInput">
+            <input
+              id="rawInput"
+              name="raw"
+              type="file"
+              accept=".raw,.dng,.cr2,.cr3,.nef,.arw,.raf,.rw2,.orf,.pef,.srw,.x3f,.3fr,.iiq,.kdc,.mos,.mrw,.rwl"
+            />
+            <span class="drop-title">RAW master</span>
+            <span class="drop-copy">DNG, CR3, NEF, ARW, RAF, RAW</span>
+            <span class="raw-name" id="rawName">Optional source negative</span>
+          </label>
+
+          <div class="editorial-fields">
+            <div class="theme-field">
+              <span>Theme</span>
+              <input name="category" id="categoryInput" type="hidden" value="human" />
+              <div class="theme-picker" id="themePicker" role="radiogroup" aria-label="Choose a theme"></div>
+            </div>
+
+            <label>
+              <span>Title</span>
+              <input name="title" type="text" placeholder="A Sunday Without Weather" required />
+            </label>
+            <label>
+              <span>Subtitle</span>
+              <input name="subtitle" type="text" placeholder="Street note / late afternoon" />
+            </label>
+            <label>
+              <span>Introduction</span>
+              <textarea
+                name="description"
+                rows="5"
+                placeholder="A short English note about the photograph, place, light, or memory."
+              ></textarea>
+            </label>
+
+            <div class="form-actions">
+              <button class="primary-button" type="submit">Publish locally</button>
+              <button class="ghost-button" id="resetButton" type="button">Reset demo archive</button>
+              <button class="ghost-button" id="exportButton" type="button">Export manifest</button>
+            </div>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <dialog class="work-dialog" id="workDialog">
+      <canvas id="posterHalftone" aria-hidden="true"></canvas>
+      <button class="dialog-close" id="dialogClose" type="button" aria-label="Close work">×</button>
+      <article class="poster-page">
+        <header class="poster-header">
+          <p id="dialogCategory"></p>
+          <h3 id="dialogTitle"></h3>
+          <p id="dialogSubtitle"></p>
+        </header>
+        <figure class="poster-art">
+          <img id="dialogImage" alt="" />
+        </figure>
+        <section class="poster-copy">
+          <p id="dialogDescription"></p>
+          <a class="raw-link" id="dialogRaw" href="#" download hidden>Download RAW master</a>
+        </section>
+      </article>
+    </dialog>
+
+    <template id="workCardTemplate">
+      <article class="work-card">
+        <button class="work-open" type="button">
+          <span class="work-image-wrap">
+            <img class="work-image" alt="" />
+            <span class="work-theme"></span>
+          </span>
+          <span class="work-copy">
+            <span class="work-kicker"></span>
+            <span class="work-title"></span>
+            <span class="work-summary"></span>
+          </span>
+        </button>
+      </article>
+    </template>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>
