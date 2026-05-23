@@ -28,5 +28,20 @@
     "imageSrc": "./assets/photos/terrain/driftwood-tide.jpg",
     "width": 2200,
     "height": 1650
+  },
+  {
+    "id": "night-rain-ledger",
+    "title": "Rain Ledger",
+    "category": "night",
+    "subtitle": "Fogged glass / evening harbor / upper floors",
+    "description": "",
+    "location": "Space Needle, Seattle, WA",
+    "date": "2026",
+    "camera": "Olympus E-M10 Mark IV / 31mm",
+    "series": "Window Weather",
+    "format": "Web JPG",
+    "imageSrc": "./assets/photos/night-desk/rain-ledger.jpg",
+    "width": 2200,
+    "height": 1650
   }
 ]
