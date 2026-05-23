@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,700;6..72,800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=20260522b" />
+    <link rel="stylesheet" href="./styles.css?v=20260523a" />
   </head>
   <body>
     <div class="paper-grain" aria-hidden="true"></div>
@@ -28,6 +28,10 @@
       <nav class="site-nav" aria-label="Primary navigation">
         <a href="#/">Archive</a>
         <a class="upload-nav" href="#/studio">Upload</a>
+        <button class="icon-button music-button" id="musicToggle" type="button" aria-pressed="false" title="Play background music">
+          <span class="music-disc" aria-hidden="true"></span>
+          <span class="sr-only" id="musicToggleLabel">Play background music</span>
+        </button>
         <button class="icon-button" id="textureToggle" type="button" aria-pressed="true" title="Toggle ink texture">
           <span class="button-dot"></span>
           <span class="sr-only">Toggle ink texture</span>
@@ -248,6 +252,6 @@
       </article>
     </template>
 
-    <script src="./app.js?v=20260522b" type="module"></script>
+    <script src="./app.js?v=20260523a" type="module"></script>
   </body>
 </html>

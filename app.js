@@ -2,6 +2,12 @@ const DB_NAME = "lace-field-portfolio";
 const STORE_NAME = "works";
 const DB_VERSION = 1;
 const PUBLISHED_WORKS_URL = "./data/works.json";
+const BGM_TRACKS = [
+  "./assets/audio/bgm-01.mp3",
+  "./assets/audio/bgm-02.mp3",
+  "./assets/audio/bgm-03.mp3",
+  "./assets/audio/bgm-04.mp3",
+];
 
 const categories = [
   { id: "human", slug: "human", label: "Human", subtitle: "People, gesture, street gravity" },
@@ -114,6 +120,11 @@ const state = {
   activeWorkId: null,
   sceneMotionTicking: false,
   pointer: { x: 0.5, y: 0.5 },
+  music: {
+    audio: null,
+    index: 0,
+    wantsPlayback: false,
+  },
 };
 
 const elements = {
@@ -147,6 +158,8 @@ const elements = {
   rawInput: document.querySelector("#rawInput"),
   previewImage: document.querySelector("#previewImage"),
   rawName: document.querySelector("#rawName"),
+  musicToggle: document.querySelector("#musicToggle"),
+  musicToggleLabel: document.querySelector("#musicToggleLabel"),
   textureToggle: document.querySelector("#textureToggle"),
   exportButton: document.querySelector("#exportButton"),
   resetButton: document.querySelector("#resetButton"),
@@ -1248,6 +1261,85 @@ function bindTextureToggle() {
   });
 }
 
+function bindMusicToggle() {
+  if (!elements.musicToggle || !BGM_TRACKS.length) return;
+
+  const audio = new Audio();
+  audio.preload = "auto";
+  audio.volume = 0.36;
+  state.music.audio = audio;
+  let skipCount = 0;
+
+  function updateMusicButton(isPlaying) {
+    elements.musicToggle.classList.toggle("is-playing", isPlaying);
+    elements.musicToggle.setAttribute("aria-pressed", String(isPlaying));
+    elements.musicToggle.title = isPlaying ? "Pause background music" : "Play background music";
+    if (elements.musicToggleLabel) {
+      elements.musicToggleLabel.textContent = isPlaying ? "Pause background music" : "Play background music";
+    }
+  }
+
+  function loadTrack(index) {
+    state.music.index = index % BGM_TRACKS.length;
+    audio.src = BGM_TRACKS[state.music.index];
+    audio.load();
+  }
+
+  function advanceTrack() {
+    loadTrack((state.music.index + 1) % BGM_TRACKS.length);
+  }
+
+  async function playCurrent() {
+    state.music.wantsPlayback = true;
+    if (!audio.src) loadTrack(state.music.index);
+    try {
+      await audio.play();
+      skipCount = 0;
+      updateMusicButton(true);
+    } catch (error) {
+      state.music.wantsPlayback = false;
+      updateMusicButton(false);
+      console.warn("Background music could not start.", error);
+    }
+  }
+
+  function pauseCurrent() {
+    state.music.wantsPlayback = false;
+    audio.pause();
+    updateMusicButton(false);
+  }
+
+  elements.musicToggle.addEventListener("click", () => {
+    if (state.music.wantsPlayback && !audio.paused) {
+      pauseCurrent();
+      return;
+    }
+    playCurrent();
+  });
+
+  audio.addEventListener("play", () => updateMusicButton(true));
+  audio.addEventListener("pause", () => {
+    if (!state.music.wantsPlayback || audio.paused) updateMusicButton(false);
+  });
+  audio.addEventListener("ended", () => {
+    advanceTrack();
+    if (state.music.wantsPlayback) playCurrent();
+  });
+  audio.addEventListener("error", () => {
+    if (!state.music.wantsPlayback || skipCount >= BGM_TRACKS.length - 1) {
+      state.music.wantsPlayback = false;
+      updateMusicButton(false);
+      return;
+    }
+    skipCount += 1;
+    advanceTrack();
+    playCurrent();
+  });
+
+  loadTrack(state.music.index);
+  updateMusicButton(false);
+}
+
 function bindExportAndReset() {
   elements.exportButton.addEventListener("click", () => {
     const manifest = state.works.map((work) => ({
@@ -1645,6 +1737,7 @@ async function init() {
   bindDialog();
   bindRowDeletes();
   bindTextureToggle();
+  bindMusicToggle();
   bindExportAndReset();
   bindKineticScenes();
   bindPointerMotion();
