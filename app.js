@@ -3,7 +3,6 @@ const STORE_NAME = "works";
 const DB_VERSION = 1;
 const PUBLISHED_WORKS_URL = "./data/works.json";
 const BGM_TRACKS = [
-  "./assets/audio/bgm-01.mp3",
   "./assets/audio/bgm-02.mp3",
   "./assets/audio/bgm-03.mp3",
   "./assets/audio/bgm-04.mp3",
