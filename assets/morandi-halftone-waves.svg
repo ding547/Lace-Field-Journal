@@ -1,23 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
   <defs>
     <pattern id="dotBlue" width="18" height="18" patternUnits="userSpaceOnUse">
-      <circle cx="6" cy="6" r="2.25" fill="#4f6267" opacity="0.32"/>
-      <circle cx="15" cy="15" r="0.86" fill="#4f6267" opacity="0.16"/>
+      <circle cx="6" cy="6" r="2.25" fill="#667577" opacity="0.34"/>
+      <circle cx="15" cy="15" r="0.86" fill="#667577" opacity="0.14"/>
     </pattern>
     <pattern id="dotRose" width="17" height="17" patternUnits="userSpaceOnUse">
-      <circle cx="5" cy="6" r="1.85" fill="#ae8981" opacity="0.24"/>
-      <circle cx="14" cy="13" r="0.72" fill="#ae8981" opacity="0.13"/>
+      <circle cx="5" cy="6" r="1.85" fill="#b39a92" opacity="0.24"/>
+      <circle cx="14" cy="13" r="0.72" fill="#b39a92" opacity="0.09"/>
     </pattern>
     <pattern id="dotSage" width="20" height="20" patternUnits="userSpaceOnUse">
-      <circle cx="7" cy="7" r="2.05" fill="#7e8378" opacity="0.24"/>
-      <circle cx="17" cy="16" r="0.8" fill="#7e8378" opacity="0.13"/>
+      <circle cx="7" cy="7" r="2.05" fill="#85887e" opacity="0.24"/>
+      <circle cx="17" cy="16" r="0.8" fill="#85887e" opacity="0.09"/>
     </pattern>
     <pattern id="dotField" width="12" height="12" patternUnits="userSpaceOnUse">
-      <circle cx="4" cy="4" r="0.92" fill="#34464d" opacity="0.13"/>
-      <circle cx="10" cy="10" r="0.46" fill="#34464d" opacity="0.08"/>
+      <circle cx="4" cy="4" r="0.92" fill="#34464d" opacity="0.12"/>
+      <circle cx="10" cy="10" r="0.46" fill="#34464d" opacity="0.07"/>
     </pattern>
     <filter id="softEdge" x="-8%" y="-18%" width="116%" height="136%">
-      <feGaussianBlur stdDeviation="28"/>
+      <feGaussianBlur stdDeviation="48"/>
     </filter>
     <filter id="paperNoise">
       <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="3" seed="17"/>
@@ -31,18 +31,18 @@
   <rect width="1600" height="1000" fill="transparent"/>
 
   <g filter="url(#softEdge)">
-    <path d="M-80 80 C180 -14 352 34 530 104 C742 186 884 214 1088 168 C1304 120 1458 52 1680 72 L1680 362 C1458 334 1302 354 1088 382 C862 414 680 356 496 296 C306 234 126 218 -80 272 Z" fill="#8b9998" opacity="0.2"/>
-    <path d="M-80 354 C138 386 292 334 468 262 C648 188 794 202 964 290 C1136 380 1308 398 1680 250 L1680 548 C1392 652 1160 634 946 536 C768 454 622 432 452 500 C254 580 96 616 -80 574 Z" fill="#caa49c" opacity="0.17"/>
-    <path d="M-80 692 C158 586 342 574 544 626 C746 678 872 762 1054 786 C1240 812 1406 754 1680 632 L1680 1080 L-80 1080 Z" fill="#8b9085" opacity="0.2"/>
-    <path d="M-80 812 C82 738 260 742 418 820 C572 895 712 904 872 842 C1044 776 1200 786 1360 856 C1486 912 1584 914 1680 860 L1680 1080 L-80 1080 Z" fill="#66777a" opacity="0.14"/>
+    <path d="M-80 80 C180 -14 352 34 530 104 C742 186 884 214 1088 168 C1304 120 1458 52 1680 72 L1680 362 C1458 334 1302 354 1088 382 C862 414 680 356 496 296 C306 234 126 218 -80 272 Z" fill="#9aa2a0" opacity="0.12"/>
+    <path d="M-80 354 C138 386 292 334 468 262 C648 188 794 202 964 290 C1136 380 1308 398 1680 250 L1680 548 C1392 652 1160 634 946 536 C768 454 622 432 452 500 C254 580 96 616 -80 574 Z" fill="#c6aaa3" opacity="0.10"/>
+    <path d="M-80 692 C158 586 342 574 544 626 C746 678 872 762 1054 786 C1240 812 1406 754 1680 632 L1680 1080 L-80 1080 Z" fill="#96978c" opacity="0.11"/>
+    <path d="M-80 812 C82 738 260 742 418 820 C572 895 712 904 872 842 C1044 776 1200 786 1360 856 C1486 912 1584 914 1680 860 L1680 1080 L-80 1080 Z" fill="#778486" opacity="0.07"/>
   </g>
 
-  <path d="M-80 80 C180 -14 352 34 530 104 C742 186 884 214 1088 168 C1304 120 1458 52 1680 72 L1680 362 C1458 334 1302 354 1088 382 C862 414 680 356 496 296 C306 234 126 218 -80 272 Z" fill="url(#dotBlue)" opacity="0.36"/>
-  <path d="M-80 354 C138 386 292 334 468 262 C648 188 794 202 964 290 C1136 380 1308 398 1680 250 L1680 548 C1392 652 1160 634 946 536 C768 454 622 432 452 500 C254 580 96 616 -80 574 Z" fill="url(#dotRose)" opacity="0.34"/>
-  <path d="M-80 692 C158 586 342 574 544 626 C746 678 872 762 1054 786 C1240 812 1406 754 1680 632 L1680 1080 L-80 1080 Z" fill="url(#dotSage)" opacity="0.34"/>
-  <path d="M-80 812 C82 738 260 742 418 820 C572 895 712 904 872 842 C1044 776 1200 786 1360 856 C1486 912 1584 914 1680 860 L1680 1080 L-80 1080 Z" fill="url(#dotBlue)" opacity="0.22"/>
+  <path d="M-80 80 C180 -14 352 34 530 104 C742 186 884 214 1088 168 C1304 120 1458 52 1680 72 L1680 362 C1458 334 1302 354 1088 382 C862 414 680 356 496 296 C306 234 126 218 -80 272 Z" fill="url(#dotBlue)" opacity="0.28"/>
+  <path d="M-80 354 C138 386 292 334 468 262 C648 188 794 202 964 290 C1136 380 1308 398 1680 250 L1680 548 C1392 652 1160 634 946 536 C768 454 622 432 452 500 C254 580 96 616 -80 574 Z" fill="url(#dotRose)" opacity="0.22"/>
+  <path d="M-80 692 C158 586 342 574 544 626 C746 678 872 762 1054 786 C1240 812 1406 754 1680 632 L1680 1080 L-80 1080 Z" fill="url(#dotSage)" opacity="0.24"/>
+  <path d="M-80 812 C82 738 260 742 418 820 C572 895 712 904 872 842 C1044 776 1200 786 1360 856 C1486 912 1584 914 1680 860 L1680 1080 L-80 1080 Z" fill="url(#dotBlue)" opacity="0.16"/>
 
-  <path d="M-80 0 L420 0 C314 124 218 250 154 408 C88 568 42 730 -80 912 Z" fill="url(#dotField)" opacity="0.18"/>
-  <path d="M1680 224 C1492 300 1340 416 1240 558 C1138 704 1088 860 982 1080 L1680 1080 Z" fill="url(#dotField)" opacity="0.1"/>
-  <rect width="1600" height="1000" filter="url(#paperNoise)" opacity="0.12"/>
+  <path d="M-80 0 L420 0 C314 124 218 250 154 408 C88 568 42 730 -80 912 Z" fill="url(#dotField)" opacity="0.12"/>
+  <path d="M1680 224 C1492 300 1340 416 1240 558 C1138 704 1088 860 982 1080 L1680 1080 Z" fill="url(#dotField)" opacity="0.07"/>
+  <rect width="1600" height="1000" filter="url(#paperNoise)" opacity="0.08"/>
 </svg>

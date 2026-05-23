@@ -1,8 +1,8 @@
 :root {
   color-scheme: light;
-  --paper: #d2bd91;
-  --paper-light: #eee4d1;
-  --paper-deep: #a99470;
+  --paper: #f1ece3;
+  --paper-light: #faf7f0;
+  --paper-deep: #a59b88;
   --ink: #17130f;
   --muted: #584d41;
   --line: rgba(23, 19, 15, 0.28);
@@ -13,17 +13,19 @@
   --mauve: #8a737f;
   --sage: #87917a;
   --clay: #a46f5f;
-  --surface: rgba(238, 228, 209, 0.46);
-  --surface-strong: rgba(241, 232, 215, 0.7);
+  --surface: rgba(250, 247, 240, 0.14);
+  --surface-strong: rgba(250, 247, 240, 0.24);
+  --wave-opacity: 0.32;
+  --grain-opacity: 0.18;
+  --lace-opacity: 0.14;
   --shadow: 0 34px 95px rgba(28, 20, 13, 0.28);
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --grid-max: min(1420px, calc(100vw - 40px));
   --serif: Newsreader, Georgia, "Times New Roman", serif;
   --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --page-background:
-    url("./assets/morandi-halftone-waves.svg"),
-    linear-gradient(rgba(23, 19, 15, 0.036) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(23, 19, 15, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(23, 19, 15, 0.024) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 19, 15, 0.02) 1px, transparent 1px);
 }
 
 * {
@@ -32,7 +34,7 @@
 
 html {
   scroll-behavior: smooth;
-  background: var(--paper);
+  background: #faf7f0;
 }
 
 body {
@@ -41,7 +43,7 @@ body {
   min-height: 100vh;
   margin: 0;
   overflow-x: hidden;
-  background: var(--paper);
+  background: #faf7f0;
   color: var(--ink);
   font-family: var(--serif);
   letter-spacing: 0;
@@ -51,18 +53,29 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: -4;
+  z-index: 0;
   pointer-events: none;
   background:
-    linear-gradient(rgba(210, 189, 145, 0.04), rgba(210, 189, 145, 0.04)),
     var(--page-background),
-    var(--paper);
-  background-size: auto, 100% 100%, 22px 22px, 22px 22px, auto;
+    #faf7f0;
+  background-size: 22px 22px, 22px 22px, auto;
   background-position: center;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: url("./assets/morandi-halftone-waves.svg?v=20260522b") center / cover no-repeat;
+  opacity: var(--wave-opacity);
+  mix-blend-mode: multiply;
 }
 
 body.texture-off .paper-grain,
 body.texture-off #laceCanvas,
+body.texture-off::after,
 body.texture-off .work-image-wrap::after,
 body.texture-off .hero-camera::after,
 body.texture-off .poster-page::after {
@@ -99,9 +112,9 @@ img {
 .paper-grain {
   position: fixed;
   inset: 0;
-  z-index: -3;
+  z-index: 0;
   pointer-events: none;
-  opacity: 0.82;
+  opacity: var(--grain-opacity);
   mix-blend-mode: multiply;
   background-image:
     radial-gradient(circle, rgba(23, 19, 15, 0.22) 0 0.52px, transparent 0.9px),
@@ -116,10 +129,10 @@ img {
 #laceCanvas {
   position: fixed;
   inset: 0;
-  z-index: -2;
+  z-index: 0;
   width: 100vw;
   height: 100vh;
-  opacity: 0.76;
+  opacity: var(--lace-opacity);
   pointer-events: none;
   transition: opacity 600ms var(--ease);
 }
@@ -137,7 +150,7 @@ img {
   padding: 0 10px 0 18px;
   border: 1px solid rgba(23, 18, 13, 0.18);
   border-radius: 999px;
-  background: rgba(232, 226, 215, 0.72);
+  background: rgba(250, 247, 240, 0.38);
   -webkit-backdrop-filter: blur(24px) saturate(1.08);
   backdrop-filter: blur(24px) saturate(1.08);
   box-shadow: 0 20px 70px rgba(31, 22, 14, 0.14);
@@ -224,6 +237,8 @@ img {
 }
 
 main {
+  position: relative;
+  z-index: 1;
   width: 100%;
 }
 
@@ -253,6 +268,21 @@ main {
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
+  background: transparent;
+}
+
+.newspaper-rule span,
+.micro-label,
+.section-label,
+.work-kicker,
+.work-theme,
+.drop-copy,
+.raw-name,
+.editorial-fields span,
+.theme-button small,
+.raw-link {
+  background: transparent;
+  box-shadow: none;
 }
 
 .newspaper-rule span:nth-child(2) {
@@ -266,7 +296,7 @@ main {
 .hero-masthead {
   display: grid;
   justify-items: center;
-  padding: clamp(28px, 4vw, 46px) 0 clamp(24px, 3vw, 38px);
+  padding: clamp(44px, 5.4vw, 76px) 0 clamp(24px, 3vw, 38px);
   text-align: center;
   background: transparent;
 }
@@ -293,7 +323,7 @@ main {
 }
 
 .hero-masthead h1 {
-  margin: clamp(6px, 1vw, 14px) 0 0;
+  margin: clamp(16px, 1.8vw, 28px) 0 0;
   max-width: 1180px;
   font-size: clamp(74px, 13vw, 190px);
   line-height: 0.78;
@@ -314,16 +344,17 @@ main {
 .poster-header h3 {
   color: transparent;
   -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 0.22px rgba(18, 15, 12, 0.56);
   background-image:
     radial-gradient(circle, rgba(18, 15, 12, 1) 0 0.95px, transparent 1.3px),
     radial-gradient(circle, rgba(18, 15, 12, 0.5) 0 1.45px, transparent 2.05px),
-    linear-gradient(rgba(18, 15, 12, 0.34), rgba(18, 15, 12, 0.34));
+    linear-gradient(rgba(18, 15, 12, 0.3), rgba(18, 15, 12, 0.3));
   background-size: 5px 5px, 13px 13px, 100% 100%;
   background-position: 0 0, 4px 7px, 0 0;
   -webkit-background-clip: text;
   background-clip: text;
   text-shadow:
-    0 0 0 rgba(18, 15, 12, 0.58),
+    0 0 0 rgba(18, 15, 12, 0.66),
     0 1px 0 rgba(255, 248, 232, 0.12);
 }
 
@@ -372,7 +403,7 @@ main {
   position: relative;
   min-height: 460px;
   overflow: hidden;
-  background: var(--paper-light);
+  background: rgba(250, 247, 240, 0.22);
   box-shadow: var(--shadow);
   transform-style: preserve-3d;
   transition: transform 700ms var(--ease);
@@ -412,7 +443,7 @@ main {
   min-width: 220px;
   padding: 12px 14px;
   border: 1px solid rgba(23, 18, 13, 0.28);
-  background: rgba(230, 215, 188, 0.82);
+  background: rgba(250, 247, 240, 0.3);
   color: var(--ink);
   font-family: var(--mono);
   font-size: 12px;
@@ -573,7 +604,7 @@ main {
   aspect-ratio: var(--work-ratio, 4 / 5);
   overflow: hidden;
   border: 1px solid var(--line);
-  background: var(--paper-light);
+  background: rgba(250, 247, 240, 0.18);
   box-shadow: 0 22px 70px rgba(28, 20, 13, 0.14);
 }
 
@@ -619,7 +650,7 @@ main {
   inset: 0;
   z-index: 0;
   overflow: hidden;
-  background: var(--paper-light);
+  background: rgba(250, 247, 240, 0.18);
 }
 
 .kinetic-scene svg {
@@ -876,7 +907,7 @@ main {
   min-height: 34px;
   padding: 0 10px;
   border: 1px solid rgba(23, 18, 13, 0.32);
-  background: var(--surface-strong);
+  background: rgba(250, 247, 240, 0.18);
   color: var(--ink);
   font-family: var(--mono);
   font-size: 11px;
@@ -901,7 +932,7 @@ main {
   z-index: 1;
   padding: 7px 9px;
   border: 1px solid rgba(23, 18, 13, 0.32);
-  background: var(--surface-strong);
+  background: rgba(250, 247, 240, 0.18);
   color: var(--ink);
   font-size: 11px;
   font-weight: 700;
@@ -1094,7 +1125,7 @@ main {
   width: 100%;
   border: 1px solid rgba(23, 18, 13, 0.26);
   border-radius: 2px;
-  background: rgba(232, 226, 215, 0.76);
+  background: rgba(250, 247, 240, 0.22);
   color: var(--ink);
   outline: 0;
   padding: 12px;
@@ -1114,7 +1145,7 @@ main {
 .editorial-fields input:focus,
 .editorial-fields textarea:focus {
   border-color: rgba(23, 18, 13, 0.58);
-  background: var(--paper-light);
+  background: rgba(250, 247, 240, 0.28);
   box-shadow: 0 0 0 4px rgba(143, 51, 39, 0.18);
 }
 
@@ -1204,7 +1235,7 @@ main {
   height: 42px;
   border: 1px solid rgba(23, 18, 13, 0.32);
   border-radius: 50%;
-  background: var(--surface-strong);
+  background: rgba(250, 247, 240, 0.28);
   color: var(--poster-ink);
   font-family: Arial, sans-serif;
   font-size: 28px;
@@ -1222,7 +1253,7 @@ main {
   padding: clamp(18px, 3vw, 34px);
   background:
     linear-gradient(90deg, rgba(143, 51, 39, 0.2), transparent 34%, rgba(38, 63, 74, 0.18)),
-    rgba(214, 208, 194, 0.72);
+    rgba(250, 247, 240, 0.3);
 }
 
 .poster-page::after {
@@ -1292,7 +1323,7 @@ main {
   border-left: 1px solid rgba(23, 18, 13, 0.42);
   background:
     radial-gradient(circle, rgba(23, 18, 13, 0.4) 0 1px, transparent 1.4px),
-    rgba(224, 219, 207, 0.58);
+    rgba(250, 247, 240, 0.24);
   background-size: 9px 9px, auto;
 }
 
@@ -1570,17 +1601,17 @@ main {
 
 body[data-route="category"],
 body[data-route="work"] {
-  background: transparent;
+  background: #faf7f0;
 }
 
 body[data-route="category"] .paper-grain,
 body[data-route="work"] .paper-grain {
-  opacity: 0.42;
+  opacity: var(--grain-opacity);
 }
 
 body[data-route="category"] #laceCanvas,
 body[data-route="work"] #laceCanvas {
-  opacity: 0.22;
+  opacity: var(--lace-opacity);
 }
 
 body:not(.admin-mode) .delete-link,
@@ -1753,7 +1784,7 @@ body:not(.admin-mode) .upload-nav {
 }
 
 .department-card:hover {
-  background: var(--surface-strong);
+  background: rgba(250, 247, 240, 0.24);
   box-shadow: 0 34px 100px rgba(28, 20, 13, 0.18);
   transform: translateY(-5px);
 }
@@ -1768,7 +1799,7 @@ body:not(.admin-mode) .upload-nav {
   overflow: hidden;
   border: 1px solid rgba(23, 18, 13, 0.24);
   border-radius: 18px;
-  background: var(--paper-light);
+  background: rgba(250, 247, 240, 0.28);
 }
 
 .department-icon svg {
@@ -2007,7 +2038,7 @@ body:not(.admin-mode) .upload-nav {
   inset: 0;
   background:
     radial-gradient(circle, rgba(23, 18, 13, 0.48) 0 1px, transparent 1.55px),
-    rgba(214, 208, 194, 0.46);
+    rgba(250, 247, 240, 0.18);
   background-size: 10px 10px, auto;
   mix-blend-mode: multiply;
 }
@@ -2091,7 +2122,7 @@ body:not(.admin-mode) .upload-nav {
   place-items: center;
   overflow: hidden;
   border: 1px solid rgba(23, 18, 13, 0.28);
-  background: rgba(224, 219, 207, 0.62);
+  background: rgba(250, 247, 240, 0.22);
   box-shadow: 0 34px 100px rgba(20, 14, 8, 0.24);
 }
 
@@ -2101,7 +2132,7 @@ body:not(.admin-mode) .upload-nav {
   inset: 0;
   background:
     radial-gradient(circle, rgba(23, 18, 13, 0.42) 0 1px, transparent 1.45px),
-    rgba(214, 208, 194, 0.18);
+    rgba(250, 247, 240, 0.08);
   background-size: 8px 8px, auto;
   mix-blend-mode: multiply;
   pointer-events: none;

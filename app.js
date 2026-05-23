@@ -639,9 +639,9 @@ function departmentIconSvg(category) {
       ).join("") + `<rect class="dept-misc-shelf blue" x="19" y="57" width="47" height="9"/>`,
   }[sample.scene];
 
-  return `<svg viewBox="0 0 84 84" role="img" aria-label="${escapeHtml(category.label)} icon">
+  return `<svg class="department-mini-icon" viewBox="0 0 84 84" role="img" aria-label="${escapeHtml(category.label)} icon">
     <style>
-      svg{background:${paper}} path,rect,circle{fill:${ink}} .accent{fill:${accent}} .blue{fill:${blue}} .stroke{fill:none;stroke:${ink};stroke-width:5;stroke-linecap:round;stroke-linejoin:round} .blue.stroke{stroke:${blue}} .accent.stroke{stroke:${accent}} .icon-paper{fill:${paper}}
+      .department-mini-icon{background:${paper}} .department-mini-icon path,.department-mini-icon rect,.department-mini-icon circle{fill:${ink}} .department-mini-icon .accent{fill:${accent}} .department-mini-icon .blue{fill:${blue}} .department-mini-icon .stroke{fill:none;stroke:${ink};stroke-width:5;stroke-linecap:round;stroke-linejoin:round} .department-mini-icon .blue.stroke{stroke:${blue}} .department-mini-icon .accent.stroke{stroke:${accent}} .department-mini-icon .icon-paper{fill:${paper}}
     </style>
     <rect class="icon-paper" x="2" y="2" width="80" height="80" />
     ${scene}
@@ -1588,7 +1588,7 @@ function setupLaceCanvas() {
     lastDraw = timestamp;
     frame += 0.006;
     ctx.clearRect(0, 0, width, height);
-    ctx.strokeStyle = "rgba(35, 28, 18, 0.11)";
+    ctx.strokeStyle = "rgba(35, 28, 18, 0.055)";
     ctx.lineWidth = 0.75;
 
     for (let y = -40; y < height + 40; y += 56) {
@@ -1604,7 +1604,7 @@ function setupLaceCanvas() {
       ctx.stroke();
     }
 
-    ctx.fillStyle = "rgba(35, 28, 18, 0.12)";
+    ctx.fillStyle = "rgba(35, 28, 18, 0.065)";
     for (let y = 0; y < height; y += 24) {
       for (let x = 0; x < width; x += 24) {
         const distance = Math.hypot(x - state.pointer.x * width, y - state.pointer.y * height);
