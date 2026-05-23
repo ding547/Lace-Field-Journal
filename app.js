@@ -1,6 +1,7 @@
 const DB_NAME = "lace-field-portfolio";
 const STORE_NAME = "works";
 const DB_VERSION = 1;
+const PUBLISHED_WORKS_URL = "./data/works.json";
 
 const categories = [
   { id: "human", slug: "human", label: "Human", subtitle: "People, gesture, street gravity" },
@@ -106,6 +107,7 @@ const seedWorks = [
 
 const state = {
   works: [],
+  baseWorks: [],
   activeCategory: "all",
   objectUrls: new Map(),
   selectedCategory: "human",
@@ -226,6 +228,10 @@ function categoryRoute(category) {
   return `#/archive/${category.slug}`;
 }
 
+function categoryPhotoFolder(categoryId) {
+  return categoryById(categoryId).slug;
+}
+
 function slugify(value) {
   return String(value || "")
     .trim()
@@ -250,6 +256,63 @@ function workBySlug(categoryId, slug) {
 
 function randomId() {
   return crypto.randomUUID?.() ?? `work-${Date.now()}-${Math.round(Math.random() * 100000)}`;
+}
+
+function isLocalPreviewHost() {
+  return ["", "localhost", "127.0.0.1", "::1", "[::1]"].includes(location.hostname);
+}
+
+function isAdminMode() {
+  return isLocalPreviewHost() || new URLSearchParams(location.search).has("admin");
+}
+
+function createSeedWorks() {
+  return seedWorks.map((work) => ({ ...work, source: "demo", imageSrc: createSeedImage(work) }));
+}
+
+function normalizePublishedWork(work, index) {
+  const category = categoryBySlug(work.category) ?? categoryById(work.category);
+  const title = String(work.title || `Untitled Photograph ${index + 1}`).trim();
+  const sample = seedWorks.find((item) => item.category === category.id) ?? seedWorks[0];
+  return {
+    id: String(work.id || `${category.id}-${slugify(title) || index + 1}`),
+    title,
+    category: category.id,
+    slug: work.slug || slugify(title),
+    subtitle: String(work.subtitle || ""),
+    description: String(work.description || ""),
+    location: String(work.location || ""),
+    date: String(work.date || ""),
+    camera: String(work.camera || ""),
+    series: String(work.series || ""),
+    format: String(work.format || "Web photograph"),
+    imageSrc: String(work.imageSrc || `./assets/photos/${categoryPhotoFolder(category.id)}/${slugify(title)}.jpg`),
+    width: Number(work.width) || null,
+    height: Number(work.height) || null,
+    palette: Array.isArray(work.palette) ? work.palette : sample.palette,
+    scene: work.scene || "",
+    source: "published",
+    createdAt: work.createdAt || "",
+  };
+}
+
+async function loadPublishedWorks() {
+  try {
+    const response = await fetch(PUBLISHED_WORKS_URL, { cache: "no-store" });
+    if (!response.ok) return [];
+    const works = await response.json();
+    if (!Array.isArray(works)) return [];
+    return works.map(normalizePublishedWork);
+  } catch (error) {
+    console.warn("Published works could not be loaded; using demo works.", error);
+    return [];
+  }
+}
+
+function mergeWorks(localWorks, baseWorks) {
+  const sortedLocalWorks = localWorks.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+  const localIds = new Set(sortedLocalWorks.map((work) => work.id));
+  return [...sortedLocalWorks, ...baseWorks.filter((work) => !localIds.has(work.id))];
 }
 
 function hexToRgb(hex) {
@@ -635,6 +698,10 @@ function renderWorkScrollList(category) {
       const issue = `${category.label} / ${String(index + 1).padStart(3, "0")}`;
       const meta = [work.location || "Unplaced", work.date || "Undated"].filter(Boolean).join(" · ");
       const intro = work.subtitle || work.description || category.subtitle;
+      const deleteButton =
+        work.source === "published"
+          ? ""
+          : `<button class="work-row-delete delete-link" type="button" data-delete-work="${escapeHtml(work.id)}">Delete</button>`;
       return `<article class="work-row" data-work-id="${escapeHtml(work.id)}" style="--work-ratio:${width} / ${height}">
         <a class="work-row-image" href="${workRoute(work)}" aria-label="Open ${escapeHtml(work.title)}">
           <img src="${src}" alt="${escapeHtml(work.title)}" width="${width}" height="${height}" loading="${index < 2 ? "eager" : "lazy"}" decoding="async" style="view-transition-name: photo-${escapeHtml(work.id)}" />
@@ -644,7 +711,10 @@ function renderWorkScrollList(category) {
           <h3>${escapeHtml(work.title)}</h3>
           <p>${escapeHtml(intro)}</p>
           <p class="work-meta">${escapeHtml(meta)} · ${escapeHtml(work.camera || "Camera notes pending")}</p>
-          <a class="row-link" href="${workRoute(work)}">View photograph</a>
+          <div class="work-row-actions">
+            <a class="row-link" href="${workRoute(work)}">View photograph</a>
+            ${deleteButton}
+          </div>
         </div>
       </article>`;
     })
@@ -656,6 +726,10 @@ function renderWorkScrollList(category) {
 async function requestDeleteWork(id) {
   const work = state.works.find((item) => item.id === id);
   if (!work) return;
+  if (work.source === "published") {
+    window.alert("Published photographs are removed by editing data/works.json and pushing that change to GitHub.");
+    return;
+  }
 
   const confirmed = window.confirm(`Delete "${work.title}" from this archive?`);
   if (!confirmed) return;
@@ -723,6 +797,7 @@ function renderDetail(category, work) {
   elements.detailTitle.textContent = work.title;
   elements.detailSubtitle.textContent = work.subtitle || category.subtitle;
   elements.detailDescription.textContent = work.description || "A quiet frame from the archive.";
+  elements.detailDelete.hidden = work.source === "published";
 
   const meta = [
     ["Location", work.location || "Unplaced"],
@@ -763,9 +838,13 @@ function renderRoute() {
   const route = parseRoute();
   state.activeWorkId = null;
   document.body.dataset.route = route.name;
-  document.body.classList.toggle("admin-mode", route.name === "studio" || new URLSearchParams(location.search).has("admin"));
+  document.body.classList.toggle("admin-mode", isAdminMode());
 
   if (route.name === "studio") {
+    if (!isAdminMode()) {
+      location.hash = "#/";
+      return;
+    }
     showView(elements.studioView);
     return;
   }
@@ -1010,6 +1089,7 @@ function bindUpload() {
       rawName: raw instanceof File && raw.size > 0 ? raw.name : "",
       rawType: raw instanceof File && raw.size > 0 ? raw.type : "",
       createdAt: new Date().toISOString(),
+      source: "local",
       ...preview,
     };
 
@@ -1049,6 +1129,7 @@ async function openWork(id) {
   elements.dialogTitle.textContent = work.title;
   elements.dialogSubtitle.textContent = work.subtitle || category.subtitle;
   elements.dialogDescription.textContent = work.description || "A quiet frame from the archive.";
+  elements.dialogDelete.hidden = work.source === "published";
 
   if (elements.dialogRaw.dataset.url) {
     URL.revokeObjectURL(elements.dialogRaw.dataset.url);
@@ -1072,7 +1153,7 @@ async function openWork(id) {
 function drawPosterHalftone(src, palette) {
   const canvas = elements.posterHalftone;
   const rect = elements.dialog.getBoundingClientRect();
-  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  const ratio = Math.min(window.devicePixelRatio || 1, 1.25);
   canvas.width = Math.max(1, Math.round(rect.width * ratio));
   canvas.height = Math.max(1, Math.round(rect.height * ratio));
   canvas.style.width = `${rect.width}px`;
@@ -1086,8 +1167,8 @@ function drawPosterHalftone(src, palette) {
   const image = new Image();
   image.onload = () => {
     const sample = document.createElement("canvas");
-    const sw = Math.max(80, Math.round(rect.width / 4));
-    const sh = Math.max(80, Math.round(rect.height / 4));
+    const sw = Math.max(72, Math.round(rect.width / 5));
+    const sh = Math.max(72, Math.round(rect.height / 5));
     sample.width = sw;
     sample.height = sh;
     const sctx = sample.getContext("2d", { willReadFrequently: true });
@@ -1108,7 +1189,7 @@ function drawPosterHalftone(src, palette) {
     ctx.globalAlpha = 1;
 
     const inkRgb = hexToRgb(ink);
-    const cell = rect.width < 700 ? 8 : 10;
+    const cell = rect.width < 700 ? 10 : 13;
     for (let y = 0; y < rect.height; y += cell) {
       for (let x = 0; x < rect.width; x += cell) {
         const sx = Math.floor((x / rect.width) * sw);
@@ -1143,10 +1224,21 @@ function bindDialog() {
   });
 }
 
+function bindRowDeletes() {
+  elements.workScrollList.addEventListener("click", (event) => {
+    const button = event.target instanceof Element ? event.target.closest("[data-delete-work]") : null;
+    if (!button) return;
+    event.preventDefault();
+    event.stopPropagation();
+    requestDeleteWork(button.dataset.deleteWork);
+  });
+}
+
 function bindTextureToggle() {
   elements.textureToggle.addEventListener("click", () => {
     const isOff = document.body.classList.toggle("texture-off");
     elements.textureToggle.setAttribute("aria-pressed", String(!isOff));
+    window.dispatchEvent(new Event("lace-texture-change"));
   });
 }
 
@@ -1163,10 +1255,12 @@ function bindExportAndReset() {
       camera: work.camera ?? "",
       series: work.series ?? "",
       format: work.format ?? "",
+      imageSrc: work.imageSrc ?? "",
       imageName: work.imageName ?? "generated-newsprint-proof.jpg",
       rawName: work.rawName ?? "",
       width: work.width ?? null,
       height: work.height ?? null,
+      source: work.source ?? "",
       createdAt: work.createdAt ?? null,
     }));
     const blob = new Blob([JSON.stringify(manifest, null, 2)], { type: "application/json" });
@@ -1182,7 +1276,7 @@ function bindExportAndReset() {
     await clearWorks();
     state.objectUrls.forEach((url) => URL.revokeObjectURL(url));
     state.objectUrls.clear();
-    state.works = seedWorks.map((work) => ({ ...work, imageSrc: createSeedImage(work) }));
+    state.works = state.baseWorks.length ? [...state.baseWorks] : createSeedWorks();
     state.activeCategory = "all";
     state.selectedCategory = "human";
     renderChrome();
@@ -1451,9 +1545,16 @@ function setupLaceCanvas() {
   let width = 0;
   let height = 0;
   let frame = 0;
+  let lastDraw = 0;
+  let animationId = 0;
+  const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  function shouldAnimate() {
+    return document.body.dataset.route === "home" && !document.body.classList.contains("texture-off") && !reducedMotionQuery.matches;
+  }
 
   function resize() {
-    const ratio = Math.min(window.devicePixelRatio || 1, 2);
+    const ratio = Math.min(window.devicePixelRatio || 1, 1.35);
     width = window.innerWidth;
     height = window.innerHeight;
     canvas.width = Math.round(width * ratio);
@@ -1463,15 +1564,21 @@ function setupLaceCanvas() {
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
   }
 
-  function draw() {
+  function draw(timestamp = 0) {
+    const animated = shouldAnimate();
+    if (animated && timestamp - lastDraw < 33) {
+      animationId = requestAnimationFrame(draw);
+      return;
+    }
+    lastDraw = timestamp;
     frame += 0.006;
     ctx.clearRect(0, 0, width, height);
     ctx.strokeStyle = "rgba(35, 28, 18, 0.11)";
     ctx.lineWidth = 0.75;
 
-    for (let y = -40; y < height + 40; y += 42) {
+    for (let y = -40; y < height + 40; y += 56) {
       ctx.beginPath();
-      for (let x = -40; x < width + 40; x += 26) {
+      for (let x = -40; x < width + 40; x += 34) {
         const pull = Math.max(0, 1 - Math.hypot(x - state.pointer.x * width, y - state.pointer.y * height) / 720);
         const wobble = Math.sin(x * 0.01 + y * 0.015 + frame * 4) * 5;
         const px = x + (state.pointer.x - 0.5) * pull * 22;
@@ -1483,8 +1590,8 @@ function setupLaceCanvas() {
     }
 
     ctx.fillStyle = "rgba(35, 28, 18, 0.12)";
-    for (let y = 0; y < height; y += 18) {
-      for (let x = 0; x < width; x += 18) {
+    for (let y = 0; y < height; y += 24) {
+      for (let x = 0; x < width; x += 24) {
         const distance = Math.hypot(x - state.pointer.x * width, y - state.pointer.y * height);
         const radius = 0.45 + Math.max(0, 1 - distance / 520) * 1.9;
         ctx.beginPath();
@@ -1493,18 +1600,35 @@ function setupLaceCanvas() {
       }
     }
 
-    requestAnimationFrame(draw);
+    if (animated) {
+      animationId = requestAnimationFrame(draw);
+    } else {
+      animationId = 0;
+    }
+  }
+
+  function scheduleDraw() {
+    if (animationId) return;
+    animationId = requestAnimationFrame(draw);
   }
 
   resize();
-  window.addEventListener("resize", resize);
-  requestAnimationFrame(draw);
+  window.addEventListener("resize", () => {
+    resize();
+    scheduleDraw();
+  });
+  window.addEventListener("hashchange", scheduleDraw);
+  window.addEventListener("lace-texture-change", scheduleDraw);
+  reducedMotionQuery.addEventListener?.("change", scheduleDraw);
+  document.addEventListener("visibilitychange", scheduleDraw);
+  scheduleDraw();
 }
 
 async function init() {
   bindThemePicker();
   bindUpload();
   bindDialog();
+  bindRowDeletes();
   bindTextureToggle();
   bindExportAndReset();
   bindKineticScenes();
@@ -1512,10 +1636,10 @@ async function init() {
   setupCameraThread();
   setupLaceCanvas();
 
+  const publishedWorks = await loadPublishedWorks();
+  state.baseWorks = publishedWorks.length ? publishedWorks : createSeedWorks();
   const savedWorks = await getAllWorks();
-  state.works = savedWorks.length
-    ? savedWorks.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)))
-    : seedWorks.map((work) => ({ ...work, imageSrc: createSeedImage(work) }));
+  state.works = mergeWorks(savedWorks, state.baseWorks);
   renderChrome();
   window.addEventListener("hashchange", () => transitionTo(renderRoute));
   renderRoute();

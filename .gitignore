@@ -2,3 +2,7 @@
 node_modules/
 qa-screenshots/
 *.log
+.DS_Store
+__MACOSX/
+__pycache__/
+*.pyc

@@ -15,6 +15,12 @@
   --grid-max: min(1420px, calc(100vw - 40px));
   --serif: Newsreader, Georgia, "Times New Roman", serif;
   --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --page-background:
+    radial-gradient(circle at 74% 22%, rgba(143, 51, 39, 0.16), transparent 34vw),
+    radial-gradient(circle at 18% 78%, rgba(38, 63, 74, 0.14), transparent 32vw),
+    linear-gradient(rgba(23, 18, 13, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 18, 13, 0.045) 1px, transparent 1px),
+    var(--paper);
 }
 
 * {
@@ -29,12 +35,7 @@ body {
   min-height: 100vh;
   margin: 0;
   overflow-x: hidden;
-  background:
-    radial-gradient(circle at 74% 22%, rgba(143, 51, 39, 0.28), transparent 34vw),
-    radial-gradient(circle at 18% 78%, rgba(38, 63, 74, 0.24), transparent 32vw),
-    linear-gradient(rgba(23, 18, 13, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(23, 18, 13, 0.06) 1px, transparent 1px),
-    var(--paper);
+  background: var(--page-background);
   background-size: auto, auto, 22px 22px, 22px 22px, auto;
   color: var(--ink);
   font-family: var(--serif);
@@ -245,10 +246,9 @@ main {
   padding: clamp(28px, 4vw, 46px) 0 clamp(24px, 3vw, 38px);
   text-align: center;
   background:
-    radial-gradient(circle, rgba(23, 18, 13, 0.18) 0 0.8px, transparent 1.25px),
-    radial-gradient(circle at 72% 42%, rgba(23, 18, 13, 0.12) 0 1.7px, transparent 2.8px),
-    repeating-linear-gradient(135deg, rgba(23, 18, 13, 0.035) 0 1px, transparent 1px 15px);
-  background-size: 9px 9px, 28px 28px, auto;
+    radial-gradient(circle, rgba(23, 18, 13, 0.14) 0 0.8px, transparent 1.25px),
+    repeating-linear-gradient(135deg, rgba(23, 18, 13, 0.026) 0 1px, transparent 1px 15px);
+  background-size: 9px 9px, auto;
 }
 
 .micro-label,
@@ -1525,11 +1525,8 @@ main {
 
 body[data-route="category"],
 body[data-route="work"] {
-  background:
-    linear-gradient(rgba(23, 18, 13, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(23, 18, 13, 0.03) 1px, transparent 1px),
-    var(--paper);
-  background-size: 28px 28px, 28px 28px, auto;
+  background: var(--page-background);
+  background-size: auto, auto, 22px 22px, 22px 22px, auto;
 }
 
 body[data-route="category"] .paper-grain,
@@ -1543,7 +1540,8 @@ body[data-route="work"] #laceCanvas {
 }
 
 body:not(.admin-mode) .delete-link,
-body:not(.admin-mode) .work-delete {
+body:not(.admin-mode) .work-delete,
+body:not(.admin-mode) .upload-nav {
   display: none !important;
 }
 
@@ -1632,12 +1630,10 @@ body:not(.admin-mode) .work-delete {
   overflow: hidden;
   border-block: 1px solid rgba(23, 18, 13, 0.34);
   background:
-    radial-gradient(circle, rgba(23, 18, 13, 0.34) 0 1px, transparent 1.45px),
-    radial-gradient(circle at 72% 56%, rgba(23, 18, 13, 0.17) 0 2.4px, transparent 3.8px),
-    repeating-linear-gradient(135deg, rgba(23, 18, 13, 0.055) 0 1px, transparent 1px 14px),
-    linear-gradient(90deg, rgba(143, 51, 39, 0.1), transparent 36%, rgba(38, 63, 74, 0.1));
-  background-size: 8px 8px, 26px 26px, auto, auto;
-  box-shadow: inset 0 1px rgba(255, 246, 222, 0.38), inset 0 -1px rgba(23, 18, 13, 0.13);
+    radial-gradient(circle, rgba(23, 18, 13, 0.28) 0 1px, transparent 1.45px),
+    radial-gradient(circle at 72% 56%, rgba(23, 18, 13, 0.12) 0 2.4px, transparent 3.8px),
+    repeating-linear-gradient(135deg, rgba(23, 18, 13, 0.038) 0 1px, transparent 1px 14px);
+  background-size: 8px 8px, 26px 26px, auto;
 }
 
 .cover-line-scene::before,
@@ -1670,14 +1666,9 @@ body:not(.admin-mode) .work-delete {
   gap: 18px;
   padding: clamp(26px, 4vw, 44px) 0 clamp(56px, 9vw, 110px);
   background:
-    radial-gradient(circle, rgba(23, 18, 13, 0.26) 0 0.8px, transparent 1.3px),
-    radial-gradient(circle at 78% 36%, rgba(23, 18, 13, 0.15) 0 1.8px, transparent 3px),
-    repeating-linear-gradient(135deg, rgba(23, 18, 13, 0.04) 0 1px, transparent 1px 15px),
-    linear-gradient(90deg, rgba(143, 51, 39, 0.06), transparent 38%, rgba(38, 63, 74, 0.06));
-  background-size: 9px 9px, 28px 28px, auto, auto;
-  box-shadow:
-    inset 0 1px rgba(255, 246, 222, 0.28),
-    inset 0 -1px rgba(23, 18, 13, 0.16);
+    radial-gradient(circle, rgba(23, 18, 13, 0.18) 0 0.8px, transparent 1.3px),
+    repeating-linear-gradient(135deg, rgba(23, 18, 13, 0.028) 0 1px, transparent 1px 15px);
+  background-size: 9px 9px, auto;
 }
 
 .department-heading {
@@ -1895,14 +1886,9 @@ body:not(.admin-mode) .work-delete {
   border-top: 5px solid var(--ink);
   border-bottom: 1px solid rgba(23, 18, 13, 0.32);
   background:
-    radial-gradient(circle, rgba(23, 18, 13, 0.2) 0 0.75px, transparent 1.25px),
-    radial-gradient(circle at 18% 72%, rgba(143, 51, 39, 0.12) 0 2px, transparent 3.4px),
-    repeating-linear-gradient(0deg, rgba(23, 18, 13, 0.035) 0 1px, transparent 1px 12px),
-    linear-gradient(100deg, rgba(255, 246, 222, 0.16), transparent 42%, rgba(38, 63, 74, 0.055));
-  background-size: 10px 10px, 32px 32px, auto, auto;
-  box-shadow:
-    inset 0 1px rgba(255, 246, 222, 0.32),
-    inset 0 -1px rgba(23, 18, 13, 0.12);
+    radial-gradient(circle, rgba(23, 18, 13, 0.15) 0 0.75px, transparent 1.25px),
+    repeating-linear-gradient(0deg, rgba(23, 18, 13, 0.026) 0 1px, transparent 1px 12px);
+  background-size: 10px 10px, auto;
 }
 
 .home-note-layout {
@@ -1973,10 +1959,11 @@ body:not(.admin-mode) .work-delete {
   pointer-events: none;
   background-position: center;
   background-size: cover;
-  opacity: 0.16;
-  filter: blur(38px) saturate(0.78) sepia(0.2);
-  transform: scale(1.08);
-  transition: background-image 500ms var(--ease), opacity 500ms var(--ease);
+  opacity: 0.1;
+  filter: saturate(0.78) sepia(0.16);
+  transform: none;
+  transition: opacity 350ms var(--ease);
+  will-change: opacity;
 }
 
 .archive-atmosphere::after,
@@ -1999,6 +1986,17 @@ body:not(.admin-mode) .work-delete {
   font-weight: 800;
   text-decoration: none;
   text-transform: uppercase;
+}
+
+.work-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.work-row-delete {
+  color: var(--ink);
 }
 
 .route-back::before {
@@ -2040,18 +2038,15 @@ body:not(.admin-mode) .work-delete {
   grid-template-columns: minmax(280px, 42vw) minmax(260px, 1fr);
   align-items: center;
   gap: clamp(28px, 6vw, 96px);
-  opacity: 0.42;
-  filter: grayscale(0.86) blur(1.3px);
-  transform: scale(0.965);
+  opacity: 0.58;
+  transform: scale(0.975);
   transition:
     opacity 700ms var(--ease),
-    filter 700ms var(--ease),
     transform 700ms var(--ease);
 }
 
 .work-row.is-active {
   opacity: 1;
-  filter: none;
   transform: scale(1);
 }
 
@@ -2200,7 +2195,7 @@ body:not(.admin-mode) .work-delete {
 
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 520ms;
+  animation-duration: 360ms;
   animation-timing-function: var(--ease);
 }
 
