@@ -3,12 +3,12 @@ const STORE_NAME = "works";
 const DB_VERSION = 1;
 
 const categories = [
-  { id: "human", label: "Human", subtitle: "People, gesture, street gravity" },
-  { id: "terrain", label: "Terrain", subtitle: "Land, weather, distance" },
-  { id: "object", label: "Still Life", subtitle: "Objects, rooms, material evidence" },
-  { id: "night", label: "Night Desk", subtitle: "Low light, neon, private streets" },
-  { id: "motion", label: "Motion", subtitle: "Transit, blur, body rhythm" },
-  { id: "misc", label: "Misc.", subtitle: "Unfiled negatives and visual notes" },
+  { id: "human", slug: "human", label: "Human", subtitle: "People, gesture, street gravity" },
+  { id: "terrain", slug: "terrain", label: "Terrain", subtitle: "Land, weather, distance" },
+  { id: "object", slug: "still-life", label: "Still Life", subtitle: "Objects, rooms, material evidence" },
+  { id: "night", slug: "night-desk", label: "Night Desk", subtitle: "Low light, neon, private streets" },
+  { id: "motion", slug: "motion", label: "Motion", subtitle: "Transit, blur, body rhythm" },
+  { id: "misc", slug: "misc", label: "Misc.", subtitle: "Unfiled negatives and visual notes" },
 ];
 
 const seedWorks = [
@@ -19,6 +19,11 @@ const seedWorks = [
     subtitle: "Street note / late afternoon",
     description:
       "A human frame held in quiet balance: posture, distance, municipal shade, and one small interruption of light.",
+    location: "Columbus, OH",
+    date: "2026",
+    camera: "35mm / 50mm",
+    series: "Street gravity",
+    format: "Digital negative",
     palette: ["#211915", "#8b3325", "#d0b98f", "#2f4d4c"],
     scene: "human",
   },
@@ -29,6 +34,11 @@ const seedWorks = [
     subtitle: "Landscape study / pale atmospheric edge",
     description:
       "The horizon is treated as a headline: a strip of green pressure, a blank field, a note from the weather desk.",
+    location: "Lake Erie, OH",
+    date: "2026",
+    camera: "Full-frame / 35mm",
+    series: "Quiet weather",
+    format: "Digital negative",
     palette: ["#171613", "#405645", "#d8c6a3", "#8c2f2d"],
     scene: "terrain",
   },
@@ -39,6 +49,11 @@ const seedWorks = [
     subtitle: "Night desk / sodium vapor",
     description:
       "A nocturnal fragment printed in heavy ink, where the street lamp becomes a small editorial decision.",
+    location: "Cleveland, OH",
+    date: "2026",
+    camera: "Low light / 35mm",
+    series: "Night desk",
+    format: "Digital negative",
     palette: ["#100f12", "#75333d", "#d4bb91", "#26384a"],
     scene: "night",
   },
@@ -49,6 +64,11 @@ const seedWorks = [
     subtitle: "Still life / table evidence",
     description:
       "Small objects are arranged like evidence on a desk: dust, glass, wire, and the cheap authority of paper.",
+    location: "Studio table",
+    date: "2026",
+    camera: "Macro / 60mm",
+    series: "Material evidence",
+    format: "Digital negative",
     palette: ["#19140f", "#a9542b", "#d7c29a", "#344c55"],
     scene: "object",
   },
@@ -59,6 +79,11 @@ const seedWorks = [
     subtitle: "Movement / glass reflection",
     description:
       "The body leaves the frame and the color stays behind, caught in a motion column of ink and grain.",
+    location: "Transit line",
+    date: "2026",
+    camera: "35mm / slow shutter",
+    series: "Movement studies",
+    format: "Digital negative",
     palette: ["#151617", "#2c6170", "#d2b98c", "#9b3b31"],
     scene: "motion",
   },
@@ -69,6 +94,11 @@ const seedWorks = [
     subtitle: "Miscellaneous / contact sheet",
     description:
       "A visual note kept because the accident has better timing than the plan.",
+    location: "Unfiled",
+    date: "2026",
+    camera: "Mixed format",
+    series: "Private negatives",
+    format: "Digital negative",
     palette: ["#191612", "#6f5a82", "#d1b98d", "#426048"],
     scene: "misc",
   },
@@ -79,15 +109,34 @@ const state = {
   activeCategory: "all",
   objectUrls: new Map(),
   selectedCategory: "human",
+  activeWorkId: null,
+  sceneMotionTicking: false,
   pointer: { x: 0.5, y: 0.5 },
 };
 
 const elements = {
   canvas: document.querySelector("#laceCanvas"),
-  heroPlate: document.querySelector("#heroPlate"),
+  views: document.querySelectorAll(".app-view"),
+  homeView: document.querySelector("#homeView"),
+  categoryView: document.querySelector("#categoryView"),
+  detailView: document.querySelector("#detailView"),
+  studioView: document.querySelector("#studioView"),
+  archiveAtmosphere: document.querySelector("#archiveAtmosphere"),
+  detailAtmosphere: document.querySelector("#detailAtmosphere"),
   departmentList: document.querySelector("#departmentList"),
-  filterBar: document.querySelector("#filterBar"),
-  galleryGrid: document.querySelector("#galleryGrid"),
+  categoryKicker: document.querySelector("#categoryKicker"),
+  categoryTitle: document.querySelector("#categoryTitle"),
+  categorySubtitle: document.querySelector("#categorySubtitle"),
+  workScrollList: document.querySelector("#workScrollList"),
+  detailBack: document.querySelector("#detailBack"),
+  detailImage: document.querySelector("#detailImage"),
+  detailKicker: document.querySelector("#detailKicker"),
+  detailTitle: document.querySelector("#detailTitle"),
+  detailSubtitle: document.querySelector("#detailSubtitle"),
+  detailMeta: document.querySelector("#detailMeta"),
+  detailDescription: document.querySelector("#detailDescription"),
+  detailRaw: document.querySelector("#detailRaw"),
+  detailDelete: document.querySelector("#detailDelete"),
   themePicker: document.querySelector("#themePicker"),
   categoryInput: document.querySelector("#categoryInput"),
   template: document.querySelector("#workCardTemplate"),
@@ -107,6 +156,7 @@ const elements = {
   dialogSubtitle: document.querySelector("#dialogSubtitle"),
   dialogDescription: document.querySelector("#dialogDescription"),
   dialogRaw: document.querySelector("#dialogRaw"),
+  dialogDelete: document.querySelector("#dialogDelete"),
   posterHalftone: document.querySelector("#posterHalftone"),
 };
 
@@ -144,6 +194,16 @@ async function putWork(work) {
   });
 }
 
+async function deleteWorkRecord(id) {
+  const db = await openDb();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(STORE_NAME, "readwrite");
+    transaction.objectStore(STORE_NAME).delete(id);
+    transaction.oncomplete = resolve;
+    transaction.onerror = () => reject(transaction.error);
+  });
+}
+
 async function clearWorks() {
   const db = await openDb();
   return new Promise((resolve, reject) => {
@@ -156,6 +216,36 @@ async function clearWorks() {
 
 function categoryById(id) {
   return categories.find((category) => category.id === id) ?? categories[0];
+}
+
+function categoryBySlug(slug) {
+  return categories.find((category) => category.slug === slug || category.id === slug) ?? null;
+}
+
+function categoryRoute(category) {
+  return `#/archive/${category.slug}`;
+}
+
+function slugify(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function workSlug(work) {
+  return slugify(work.slug || work.title || work.id) || work.id;
+}
+
+function workRoute(work) {
+  const category = categoryById(work.category);
+  return `${categoryRoute(category)}/${workSlug(work)}`;
+}
+
+function workBySlug(categoryId, slug) {
+  return state.works.find((work) => work.category === categoryId && (work.id === slug || workSlug(work) === slug));
 }
 
 function randomId() {
@@ -358,64 +448,395 @@ function getImageSrc(work) {
   return work.imageSrc;
 }
 
+function kineticSceneSvg(work) {
+  if (!work.scene || !work.palette) return "";
+  const [ink, accent, paper, blue] = work.palette;
+  const category = categoryById(work.category);
+  const firstWord = work.title.split(" ")[0].toUpperCase();
+  const scene = {
+    human: `
+      <g class="scene-substrate">
+        <rect x="210" y="1070" width="780" height="46" />
+      </g>
+      <g class="scene-layer human-column accent-fill"><rect x="660" y="520" width="112" height="462" /></g>
+      <g class="scene-layer human-body ink-fill">
+        <circle cx="466" cy="438" r="78" />
+        <rect x="395" y="540" width="142" height="418" />
+      </g>
+      <g class="scene-layer human-shadow blue-fill"><rect x="260" y="1015" width="680" height="42" /></g>
+    `,
+    terrain: `
+      <g class="terrain-stack ink-fill">
+        ${Array.from({ length: 7 }, (_, i) => {
+          const y = 640 + i * 66;
+          const opacity = (0.88 - i * 0.08).toFixed(2);
+          return `<path class="scene-layer terrain-wave wave-${i + 1}" style="--wave: ${i}" opacity="${opacity}" d="M190 ${y} C300 ${y - 90} 420 ${y + 60} 540 ${y - 20} S790 ${y - 80} 1010 ${y + 20} L1010 1180 L190 1180 Z" />`;
+        }).join("")}
+      </g>
+      <g class="scene-layer terrain-sun accent-fill"><circle cx="855" cy="520" r="58" /></g>
+      <g class="scene-layer terrain-line blue-stroke"><path d="M180 618 C365 540 520 630 690 566 S900 512 1030 586" /></g>
+    `,
+    night: `
+      <g class="scene-layer night-post ink-fill"><rect x="260" y="430" width="58" height="780" /><rect x="880" y="520" width="48" height="690" /></g>
+      <g class="scene-layer night-orbit blue-stroke"><circle cx="600" cy="720" r="220" /></g>
+      <g class="scene-layer night-road accent-fill"><rect x="160" y="785" width="880" height="68" /></g>
+      <g class="scene-layer night-glow accent-fill"><circle cx="600" cy="710" r="70" /></g>
+      <g class="scene-layer night-wire ink-stroke"><path d="M240 560 C420 500 780 500 960 560" /></g>
+    `,
+    object: `
+      <g class="scene-layer object-frame ink-stroke"><rect x="300" y="470" width="285" height="510" /></g>
+      <g class="scene-layer object-block accent-fill"><rect x="695" y="620" width="300" height="300" /></g>
+      <g class="scene-layer object-wire blue-stroke"><path d="M190 1020 C370 920 505 865 648 792 S890 650 1030 585" /></g>
+      <g class="scene-layer object-dot ink-fill"><circle cx="760" cy="560" r="42" /><circle cx="915" cy="965" r="28" /></g>
+    `,
+    motion: `
+      <g class="motion-stack ink-fill">
+        ${Array.from({ length: 12 }, (_, i) => `<rect class="scene-layer motion-bar bar-${i + 1}" style="--bar: ${i}" x="${145 + i * 78}" y="${470 + i * 16}" width="56" height="710" opacity="${(0.28 + i * 0.045).toFixed(2)}" />`).join("")}
+      </g>
+      <g class="scene-layer motion-band accent-fill"><rect x="130" y="765" width="940" height="88" /></g>
+      <g class="scene-layer motion-rail blue-stroke"><path d="M130 650 L1080 570 M130 960 L1080 1040" /></g>
+    `,
+    misc: `
+      <g class="misc-orbits">
+        ${Array.from({ length: 10 }, (_, i) => `<circle class="scene-layer misc-ring ring-${i + 1}" style="--ring: ${i}" cx="${600 + Math.cos(i) * 230}" cy="${760 + Math.sin(i * 1.4) * 230}" r="${52 + i * 8}" />`).join("")}
+      </g>
+      <g class="scene-layer misc-signal blue-fill"><rect x="292" y="950" width="616" height="96" /></g>
+      <g class="scene-layer misc-pulse accent-fill"><circle cx="600" cy="760" r="54" /></g>
+    `,
+  }[work.scene];
+
+  return `
+    <span class="kinetic-scene" aria-hidden="true" data-scene="${work.scene}">
+      <svg viewBox="0 0 1200 1500" role="img">
+        <style>
+          .ink-fill{fill:${ink}}.accent-fill{fill:${accent}}.paper-fill{fill:${paper}}.blue-fill{fill:${blue}}
+          .ink-stroke{stroke:${ink}}.blue-stroke{stroke:${blue}}
+        </style>
+        <rect class="paper-fill" width="1200" height="1500" />
+        <rect class="scene-rule ink-fill" x="84" y="92" width="1032" height="8" />
+        <rect class="scene-rule ink-fill" x="84" y="1400" width="1032" height="8" />
+        <text class="scene-headline accent-fill" x="112" y="300">${firstWord}</text>
+        <rect class="scene-frame" x="84" y="360" width="1032" height="820" />
+        <g class="scene-viewport">${scene}</g>
+        <text class="scene-title ink-fill" x="110" y="1278">${work.title}</text>
+        <text class="scene-department ink-fill" x="110" y="1360">${category.label.toUpperCase()}</text>
+      </svg>
+    </span>`;
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function categoryWorks(categoryId) {
+  return state.works.filter((work) => work.category === categoryId);
+}
+
+function departmentIconSvg(category) {
+  const sample = seedWorks.find((work) => work.category === category.id) ?? seedWorks[0];
+  const [ink, accent, paper, blue] = sample.palette;
+  const scene = {
+    human: `
+      <circle class="dept-human-head" cx="27" cy="21" r="8"/>
+      <rect class="dept-human-body" x="20" y="33" width="14" height="28"/>
+      <rect class="dept-human-shadow accent" x="43" y="29" width="10" height="35"/>
+      <rect class="dept-human-ground blue" x="18" y="66" width="42" height="5"/>
+    `,
+    terrain: `
+      <path class="dept-terrain-mass" d="M10 45 C22 31 33 51 45 38 S61 31 74 43 L74 70 L10 70 Z"/>
+      <path class="dept-terrain-wave blue stroke" d="M9 32 C24 22 39 36 52 28 S69 24 78 34"/>
+    `,
+    object: `
+      <rect class="dept-object-frame stroke" x="16" y="18" width="28" height="46"/>
+      <rect class="dept-object-block accent" x="50" y="34" width="24" height="25"/>
+      <path class="dept-object-measure blue stroke" d="M10 66 C26 58 45 50 78 30"/>
+    `,
+    night: `
+      <rect class="dept-night-post-left" x="16" y="13" width="8" height="62"/>
+      <rect class="dept-night-post-right" x="64" y="22" width="7" height="53"/>
+      <circle class="dept-night-orbit blue stroke" cx="43" cy="42" r="20"/>
+      <rect class="dept-night-light accent" x="10" y="48" width="68" height="8"/>
+    `,
+    motion:
+      Array.from(
+        { length: 6 },
+        (_, index) =>
+          `<rect class="dept-motion-mini-bar dept-bar-${index + 1}" x="${14 + index * 10}" y="${18 + index * 4}" width="6" height="48" opacity="${0.35 + index * 0.1}"/>`,
+      ).join("") + `<rect class="dept-motion-mini-band accent" x="10" y="43" width="68" height="10"/>`,
+    misc:
+      Array.from(
+        { length: 5 },
+        (_, index) =>
+          `<circle class="dept-misc-ring dept-ring-${index + 1} ${index % 2 ? "accent stroke" : "stroke"}" cx="${42 + Math.cos(index) * 18}" cy="${42 + Math.sin(index * 1.4) * 18}" r="${9 + index * 3}"/>`,
+      ).join("") + `<rect class="dept-misc-shelf blue" x="19" y="57" width="47" height="9"/>`,
+  }[sample.scene];
+
+  return `<svg viewBox="0 0 84 84" role="img" aria-label="${escapeHtml(category.label)} icon">
+    <style>
+      svg{background:${paper}} path,rect,circle{fill:${ink}} .accent{fill:${accent}} .blue{fill:${blue}} .stroke{fill:none;stroke:${ink};stroke-width:5;stroke-linecap:round;stroke-linejoin:round} .blue.stroke{stroke:${blue}} .accent.stroke{stroke:${accent}} .icon-paper{fill:${paper}}
+    </style>
+    <rect class="icon-paper" x="2" y="2" width="80" height="80" />
+    ${scene}
+  </svg>`;
+}
+
 function renderChrome() {
   elements.departmentList.innerHTML = categories
-    .map((category) => `<li><span>${category.label}</span><em>${category.subtitle}</em></li>`)
-    .join("");
-
-  const filters = [{ id: "all", label: "All" }, ...categories.map(({ id, label }) => ({ id, label }))];
-  elements.filterBar.innerHTML = filters
-    .map(
-      (item) =>
-        `<button class="filter-button${item.id === state.activeCategory ? " is-active" : ""}" type="button" data-category="${item.id}">${item.label}</button>`,
-    )
+    .map((category) => {
+      const count = categoryWorks(category.id).length;
+      return `<li>
+        <a class="department-card" href="${categoryRoute(category)}" data-category-card="${category.id}">
+          <span class="department-icon" aria-hidden="true">${departmentIconSvg(category)}</span>
+          <span class="department-copy">
+            <strong>${escapeHtml(category.label)}</strong>
+            <em>${escapeHtml(category.subtitle)}</em>
+            <span>${count} ${count === 1 ? "work" : "works"}</span>
+          </span>
+        </a>
+      </li>`;
+    })
     .join("");
 
   elements.themePicker.innerHTML = categories
     .map(
       (category) =>
         `<button class="theme-button${category.id === state.selectedCategory ? " is-active" : ""}" type="button" role="radio" aria-checked="${category.id === state.selectedCategory}" data-theme="${category.id}">
-          <span>${category.label}</span>
-          <small>${category.subtitle}</small>
+          <span>${escapeHtml(category.label)}</span>
+          <small>${escapeHtml(category.subtitle)}</small>
         </button>`,
     )
     .join("");
   elements.categoryInput.value = state.selectedCategory;
 }
 
-function renderGallery() {
-  const works = state.works.filter(
-    (work) => state.activeCategory === "all" || work.category === state.activeCategory,
+function renderWorkScrollList(category) {
+  const works = categoryWorks(category.id);
+  const activeWork = works[0];
+  elements.categoryKicker.textContent = "Archive department";
+  elements.categoryTitle.textContent = category.label;
+  elements.categorySubtitle.textContent = category.subtitle;
+  elements.archiveAtmosphere.style.backgroundImage = activeWork ? `url("${getImageSrc(activeWork)}")` : "";
+
+  if (!works.length) {
+    elements.workScrollList.innerHTML = '<p class="empty-gallery">No photographs in this section yet.</p>';
+    return;
+  }
+
+  elements.workScrollList.innerHTML = works
+    .map((work, index) => {
+      const src = getImageSrc(work);
+      const width = Number(work.width) || 1200;
+      const height = Number(work.height) || 1500;
+      const issue = `${category.label} / ${String(index + 1).padStart(3, "0")}`;
+      const meta = [work.location || "Unplaced", work.date || "Undated"].filter(Boolean).join(" · ");
+      const intro = work.subtitle || work.description || category.subtitle;
+      return `<article class="work-row" data-work-id="${escapeHtml(work.id)}" style="--work-ratio:${width} / ${height}">
+        <a class="work-row-image" href="${workRoute(work)}" aria-label="Open ${escapeHtml(work.title)}">
+          <img src="${src}" alt="${escapeHtml(work.title)}" width="${width}" height="${height}" loading="${index < 2 ? "eager" : "lazy"}" decoding="async" style="view-transition-name: photo-${escapeHtml(work.id)}" />
+        </a>
+        <div class="work-row-copy">
+          <p class="work-index">${escapeHtml(issue)}</p>
+          <h3>${escapeHtml(work.title)}</h3>
+          <p>${escapeHtml(intro)}</p>
+          <p class="work-meta">${escapeHtml(meta)} · ${escapeHtml(work.camera || "Camera notes pending")}</p>
+          <a class="row-link" href="${workRoute(work)}">View photograph</a>
+        </div>
+      </article>`;
+    })
+    .join("");
+
+  setupWorkObserver();
+}
+
+async function requestDeleteWork(id) {
+  const work = state.works.find((item) => item.id === id);
+  if (!work) return;
+
+  const confirmed = window.confirm(`Delete "${work.title}" from this archive?`);
+  if (!confirmed) return;
+
+  if (elements.dialog.open) elements.dialog.close();
+  await deleteWorkRecord(id);
+
+  if (state.objectUrls.has(id)) {
+    URL.revokeObjectURL(state.objectUrls.get(id));
+    state.objectUrls.delete(id);
+  }
+
+  state.works = state.works.filter((item) => item.id !== id);
+  if (state.activeWorkId === id) state.activeWorkId = null;
+  renderChrome();
+  location.hash = categoryRoute(categoryById(work.category));
+  renderRoute();
+}
+
+function setupWorkObserver() {
+  const rows = document.querySelectorAll(".work-row");
+  if (!rows.length) return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        entry.target.classList.toggle("is-active", entry.isIntersecting);
+        if (entry.isIntersecting) {
+          const work = state.works.find((item) => item.id === entry.target.dataset.workId);
+          if (work) elements.archiveAtmosphere.style.backgroundImage = `url("${getImageSrc(work)}")`;
+        }
+      });
+    },
+    { threshold: 0.55 },
   );
-  elements.galleryGrid.innerHTML = "";
 
-  works.forEach((work, index) => {
-    const node = elements.template.content.firstElementChild.cloneNode(true);
-    const category = categoryById(work.category);
-    const image = node.querySelector(".work-image");
-    const button = node.querySelector(".work-open");
+  rows.forEach((row) => observer.observe(row));
+}
 
-    image.src = getImageSrc(work);
-    image.alt = work.title;
-    node.querySelector(".work-theme").textContent = category.label;
-    node.querySelector(".work-kicker").textContent = `Issue ${String(index + 1).padStart(2, "0")} / ${category.label}`;
-    node.querySelector(".work-title").textContent = work.title;
-    node.querySelector(".work-summary").textContent = work.subtitle || category.subtitle;
-    node.style.setProperty("--accent", work.palette?.[1] ?? "#8b3325");
-    node.style.animationDelay = `${Math.min(index * 55, 420)}ms`;
-    button.addEventListener("click", () => openWork(work.id));
-    elements.galleryGrid.append(node);
+function showView(view) {
+  elements.views.forEach((item) => {
+    item.hidden = item !== view;
   });
 }
 
-function bindFilters() {
-  elements.filterBar.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-category]");
-    if (!button) return;
-    state.activeCategory = button.dataset.category;
-    renderChrome();
-    renderGallery();
+function transitionTo(renderFn) {
+  if (document.startViewTransition) {
+    document.startViewTransition(renderFn);
+  } else {
+    renderFn();
+  }
+}
+
+function renderDetail(category, work) {
+  const src = getImageSrc(work);
+  state.activeWorkId = work.id;
+  elements.detailBack.href = categoryRoute(category);
+  elements.detailAtmosphere.style.backgroundImage = `url("${src}")`;
+  elements.detailImage.src = src;
+  elements.detailImage.alt = work.title;
+  elements.detailImage.width = Number(work.width) || 1200;
+  elements.detailImage.height = Number(work.height) || 1500;
+  elements.detailImage.style.viewTransitionName = `photo-${work.id}`;
+  elements.detailKicker.textContent = `${category.label} / ${String(categoryWorks(category.id).findIndex((item) => item.id === work.id) + 1).padStart(3, "0")}`;
+  elements.detailTitle.textContent = work.title;
+  elements.detailSubtitle.textContent = work.subtitle || category.subtitle;
+  elements.detailDescription.textContent = work.description || "A quiet frame from the archive.";
+
+  const meta = [
+    ["Location", work.location || "Unplaced"],
+    ["Date", work.date || "Undated"],
+    ["Series", work.series || category.label],
+    ["Camera / Format", [work.camera, work.format].filter(Boolean).join(" / ") || "Camera notes pending"],
+    ["Category", category.label],
+  ];
+  elements.detailMeta.innerHTML = meta.map(([key, value]) => `<dt>${escapeHtml(key)}</dt><dd>${escapeHtml(value)}</dd>`).join("");
+
+  if (elements.detailRaw.dataset.url) {
+    URL.revokeObjectURL(elements.detailRaw.dataset.url);
+    delete elements.detailRaw.dataset.url;
+  }
+
+  if (work.rawBlob) {
+    const rawUrl = URL.createObjectURL(work.rawBlob);
+    elements.detailRaw.href = rawUrl;
+    elements.detailRaw.download = work.rawName || `${work.title}.raw`;
+    elements.detailRaw.dataset.url = rawUrl;
+    elements.detailRaw.hidden = false;
+  } else {
+    elements.detailRaw.hidden = true;
+  }
+}
+
+function parseRoute() {
+  const hash = location.hash || "#/";
+  const parts = hash.replace(/^#\/?/, "").split("/").filter(Boolean);
+  if (!parts.length) return { name: "home" };
+  if (parts[0] === "studio") return { name: "studio" };
+  if (parts[0] === "archive" && parts[1] && parts[2]) return { name: "work", categorySlug: parts[1], workSlug: parts.slice(2).join("/") };
+  if (parts[0] === "archive" && parts[1]) return { name: "category", categorySlug: parts[1] };
+  return { name: "home" };
+}
+
+function renderRoute() {
+  const route = parseRoute();
+  state.activeWorkId = null;
+  document.body.dataset.route = route.name;
+  document.body.classList.toggle("admin-mode", route.name === "studio" || new URLSearchParams(location.search).has("admin"));
+
+  if (route.name === "studio") {
+    showView(elements.studioView);
+    return;
+  }
+
+  if (route.name === "category") {
+    const category = categoryBySlug(route.categorySlug);
+    if (!category) {
+      location.hash = "#/";
+      return;
+    }
+    showView(elements.categoryView);
+    renderWorkScrollList(category);
+    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
+    return;
+  }
+
+  if (route.name === "work") {
+    const category = categoryBySlug(route.categorySlug);
+    const work = category ? workBySlug(category.id, route.workSlug) : null;
+    if (!category || !work) {
+      location.hash = category ? categoryRoute(category) : "#/";
+      return;
+    }
+    showView(elements.detailView);
+    renderDetail(category, work);
+    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
+    return;
+  }
+
+  showView(elements.homeView);
+  renderChrome();
+  requestAnimationFrame(updateKineticScenes);
+}
+
+function updateKineticScenes() {
+  const scenes = document.querySelectorAll(".kinetic-scene");
+  if (!scenes.length) return;
+
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+  scenes.forEach((scene) => {
+    const rect = scene.getBoundingClientRect();
+    const centerOffset = (rect.top + rect.height / 2 - viewportHeight / 2) / (viewportHeight / 2 + rect.height / 2);
+    const y = Math.max(-1, Math.min(1, centerOffset));
+    const presence = 1 - Math.min(1, Math.abs(y));
+    scene.style.setProperty("--scene-y", y.toFixed(3));
+    scene.style.setProperty("--scene-p", presence.toFixed(3));
+    scene.style.setProperty("--shift-xs", `${(y * 12).toFixed(2)}px`);
+    scene.style.setProperty("--shift-sm", `${(y * 26).toFixed(2)}px`);
+    scene.style.setProperty("--shift-md", `${(y * 52).toFixed(2)}px`);
+    scene.style.setProperty("--shift-lg", `${(y * 86).toFixed(2)}px`);
+    scene.style.setProperty("--shift-xl", `${(y * 128).toFixed(2)}px`);
+    scene.style.setProperty("--shift-neg-sm", `${(y * -26).toFixed(2)}px`);
+    scene.style.setProperty("--shift-neg-md", `${(y * -52).toFixed(2)}px`);
+    scene.style.setProperty("--shift-neg-lg", `${(y * -86).toFixed(2)}px`);
+    scene.style.setProperty("--scene-scale", (1 + presence * 0.028).toFixed(4));
+    scene.style.setProperty("--scene-wash", (0.72 + presence * 0.28).toFixed(3));
   });
+}
+
+function scheduleKineticScenes() {
+  if (state.sceneMotionTicking) return;
+  state.sceneMotionTicking = true;
+  requestAnimationFrame(() => {
+    updateKineticScenes();
+    state.sceneMotionTicking = false;
+  });
+}
+
+function bindKineticScenes() {
+  window.addEventListener("scroll", scheduleKineticScenes, { passive: true });
+  window.addEventListener("resize", scheduleKineticScenes);
 }
 
 function bindThemePicker() {
@@ -578,6 +999,11 @@ function bindUpload() {
       category,
       subtitle: String(form.get("subtitle")).trim(),
       description: String(form.get("description")).trim(),
+      location: String(form.get("location")).trim(),
+      date: String(form.get("date")).trim(),
+      camera: String(form.get("camera")).trim(),
+      series: String(form.get("series")).trim(),
+      format: image.type || "Uploaded preview",
       imageName: image.name,
       imageType: image.type,
       rawBlob: raw instanceof File && raw.size > 0 ? raw : null,
@@ -596,8 +1022,8 @@ function bindUpload() {
     elements.rawName.textContent = "Optional source negative";
     state.activeCategory = "all";
     renderChrome();
-    renderGallery();
-    document.querySelector("#portfolio").scrollIntoView({ behavior: "smooth", block: "start" });
+    location.hash = categoryRoute(categoryById(category));
+    renderRoute();
   });
 }
 
@@ -608,10 +1034,14 @@ async function openWork(id) {
   const category = categoryById(work.category);
   const src = getImageSrc(work);
   const palette = work.palette ?? (await derivePaletteFromSrc(src));
+  const width = Number(work.width) || 1200;
+  const height = Number(work.height) || 1500;
+  state.activeWorkId = id;
   elements.dialog.style.setProperty("--poster-ink", palette[0]);
   elements.dialog.style.setProperty("--poster-accent", palette[1]);
   elements.dialog.style.setProperty("--poster-paper", palette[2]);
   elements.dialog.style.setProperty("--poster-blue", palette[3]);
+  elements.dialog.style.setProperty("--work-ratio", `${width} / ${height}`);
 
   elements.dialogImage.src = src;
   elements.dialogImage.alt = work.title;
@@ -698,9 +1128,18 @@ function drawPosterHalftone(src, palette) {
 }
 
 function bindDialog() {
+  elements.detailDelete.addEventListener("click", () => {
+    if (state.activeWorkId) requestDeleteWork(state.activeWorkId);
+  });
   elements.dialogClose.addEventListener("click", () => elements.dialog.close());
+  elements.dialogDelete.addEventListener("click", () => {
+    if (state.activeWorkId) requestDeleteWork(state.activeWorkId);
+  });
   elements.dialog.addEventListener("click", (event) => {
     if (event.target === elements.dialog) elements.dialog.close();
+  });
+  elements.dialog.addEventListener("close", () => {
+    state.activeWorkId = null;
   });
 }
 
@@ -719,6 +1158,11 @@ function bindExportAndReset() {
       category: work.category,
       subtitle: work.subtitle,
       description: work.description,
+      location: work.location ?? "",
+      date: work.date ?? "",
+      camera: work.camera ?? "",
+      series: work.series ?? "",
+      format: work.format ?? "",
       imageName: work.imageName ?? "generated-newsprint-proof.jpg",
       rawName: work.rawName ?? "",
       width: work.width ?? null,
@@ -742,7 +1186,8 @@ function bindExportAndReset() {
     state.activeCategory = "all";
     state.selectedCategory = "human";
     renderChrome();
-    renderGallery();
+    location.hash = "#/";
+    renderRoute();
   });
 }
 
@@ -754,10 +1199,250 @@ function bindPointerMotion() {
       state.pointer.y = event.clientY / window.innerHeight;
       const rotateY = (state.pointer.x - 0.5) * 8;
       const rotateX = (0.5 - state.pointer.y) * 6;
-      elements.heroPlate.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(0)`;
+      document.documentElement.style.setProperty("--pointer-rotate-x", `${rotateX}deg`);
+      document.documentElement.style.setProperty("--pointer-rotate-y", `${rotateY}deg`);
     },
     { passive: true },
   );
+}
+
+function setupCameraThread() {
+  const threadPath = document.querySelector("#homeThreadLine");
+  const layer = document.querySelector(".home-thread-layer");
+  const cover = document.querySelector(".cover-line-scene");
+  const hero = elements.homeView;
+  if (!threadPath || !layer || !cover || !hero) return;
+
+  const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let cameraLength = 0;
+  let totalLength = 0;
+  let ticking = false;
+  let smoothDistance = 0;
+  let targetDistance = 0;
+  let layoutKey = "";
+
+  function homeScrollDistance() {
+    const route = document.body.dataset.route;
+    if (route !== "home") return 0;
+    const coverRect = cover.getBoundingClientRect();
+    const coverCenter = window.scrollY + coverRect.top + coverRect.height * 0.5;
+    const triggerScroll = coverCenter - window.innerHeight * 0.5;
+    return Math.max(0, window.scrollY - triggerScroll);
+  }
+
+  function point(value) {
+    return Number(value).toFixed(1);
+  }
+
+  function circleCommands(cx, cy, radius) {
+    const kappa = radius * 0.55228475;
+    return [
+      `C ${point(cx - radius)} ${point(cy - kappa)} ${point(cx - kappa)} ${point(cy - radius)} ${point(cx)} ${point(cy - radius)}`,
+      `C ${point(cx + kappa)} ${point(cy - radius)} ${point(cx + radius)} ${point(cy - kappa)} ${point(cx + radius)} ${point(cy)}`,
+      `C ${point(cx + radius)} ${point(cy + kappa)} ${point(cx + kappa)} ${point(cy + radius)} ${point(cx)} ${point(cy + radius)}`,
+      `C ${point(cx - kappa)} ${point(cy + radius)} ${point(cx - radius)} ${point(cy + kappa)} ${point(cx - radius)} ${point(cy)}`,
+    ];
+  }
+
+  function buildCameraPath(bounds) {
+    const cameraWidth = bounds.width;
+    const cameraHeight = bounds.height;
+    const left = bounds.left;
+    const top = bounds.top;
+    const bodyLeft = left + cameraWidth * 0.055;
+    const bodyRight = left + cameraWidth * 0.84;
+    const bodyTop = top + cameraHeight * 0.3;
+    const bodyBottom = top + cameraHeight * 0.9;
+    const crownTop = top + cameraHeight * 0.08;
+    const finderTop = top + cameraHeight * 0.2;
+    const lensX = left + cameraWidth * 0.52;
+    const lensY = top + cameraHeight * 0.58;
+    const lensRadius = Math.min(cameraWidth * 0.21, cameraHeight * 0.34);
+    const exit = {
+      x: bodyRight + cameraWidth * 0.035,
+      y: lensY,
+    };
+    const commands = [
+      `M ${point(bodyLeft)} ${point(bodyBottom)}`,
+      `L ${point(bodyLeft)} ${point(bodyTop)}`,
+      `Q ${point(bodyLeft)} ${point(bodyTop - cameraHeight * 0.08)} ${point(bodyLeft + cameraWidth * 0.045)} ${point(bodyTop - cameraHeight * 0.08)}`,
+      `L ${point(left + cameraWidth * 0.235)} ${point(bodyTop - cameraHeight * 0.08)}`,
+      `L ${point(left + cameraWidth * 0.235)} ${point(finderTop)}`,
+      `Q ${point(left + cameraWidth * 0.235)} ${point(finderTop - cameraHeight * 0.04)} ${point(left + cameraWidth * 0.275)} ${point(finderTop - cameraHeight * 0.04)}`,
+      `L ${point(left + cameraWidth * 0.34)} ${point(finderTop - cameraHeight * 0.04)}`,
+      `Q ${point(left + cameraWidth * 0.38)} ${point(finderTop - cameraHeight * 0.04)} ${point(left + cameraWidth * 0.38)} ${point(finderTop)}`,
+      `L ${point(left + cameraWidth * 0.38)} ${point(bodyTop - cameraHeight * 0.08)}`,
+      `L ${point(left + cameraWidth * 0.445)} ${point(bodyTop - cameraHeight * 0.08)}`,
+      `L ${point(left + cameraWidth * 0.49)} ${point(crownTop)}`,
+      `L ${point(left + cameraWidth * 0.65)} ${point(crownTop)}`,
+      `L ${point(left + cameraWidth * 0.705)} ${point(bodyTop - cameraHeight * 0.08)}`,
+      `L ${point(left + cameraWidth * 0.81)} ${point(bodyTop - cameraHeight * 0.08)}`,
+      `L ${point(left + cameraWidth * 0.81)} ${point(finderTop)}`,
+      `Q ${point(left + cameraWidth * 0.81)} ${point(finderTop - cameraHeight * 0.04)} ${point(left + cameraWidth * 0.86)} ${point(finderTop - cameraHeight * 0.04)}`,
+      `L ${point(bodyRight)} ${point(finderTop - cameraHeight * 0.04)}`,
+      `Q ${point(bodyRight + cameraWidth * 0.045)} ${point(finderTop - cameraHeight * 0.04)} ${point(bodyRight + cameraWidth * 0.045)} ${point(finderTop + cameraHeight * 0.035)}`,
+      `L ${point(bodyRight + cameraWidth * 0.045)} ${point(bodyTop - cameraHeight * 0.08)}`,
+      `L ${point(bodyRight)} ${point(bodyTop - cameraHeight * 0.08)}`,
+      `Q ${point(bodyRight + cameraWidth * 0.06)} ${point(bodyTop - cameraHeight * 0.08)} ${point(bodyRight + cameraWidth * 0.06)} ${point(bodyTop)}`,
+      `L ${point(bodyRight + cameraWidth * 0.06)} ${point(bodyBottom)}`,
+      `Q ${point(bodyRight + cameraWidth * 0.06)} ${point(bodyBottom + cameraHeight * 0.04)} ${point(bodyRight)} ${point(bodyBottom + cameraHeight * 0.04)}`,
+      `L ${point(bodyLeft)} ${point(bodyBottom + cameraHeight * 0.04)}`,
+      `Q ${point(bodyLeft - cameraWidth * 0.03)} ${point(bodyBottom + cameraHeight * 0.04)} ${point(bodyLeft)} ${point(bodyBottom)}`,
+      `L ${point(left + cameraWidth * 0.18)} ${point(bodyBottom)}`,
+      `L ${point(left + cameraWidth * 0.18)} ${point(top + cameraHeight * 0.55)}`,
+      `L ${point(left + cameraWidth * 0.28)} ${point(top + cameraHeight * 0.55)}`,
+      `L ${point(left + cameraWidth * 0.28)} ${point(top + cameraHeight * 0.68)}`,
+      `L ${point(left + cameraWidth * 0.18)} ${point(top + cameraHeight * 0.68)}`,
+      `L ${point(left + cameraWidth * 0.28)} ${point(top + cameraHeight * 0.68)}`,
+      `L ${point(lensX - lensRadius)} ${point(lensY)}`,
+      ...circleCommands(lensX, lensY, lensRadius),
+      `L ${point(lensX - lensRadius * 0.66)} ${point(lensY)}`,
+      ...circleCommands(lensX, lensY, lensRadius * 0.66),
+      `L ${point(lensX - lensRadius * 0.36)} ${point(lensY)}`,
+      ...circleCommands(lensX, lensY, lensRadius * 0.36),
+      `L ${point(lensX - lensRadius * 0.14)} ${point(lensY)}`,
+      ...circleCommands(lensX, lensY, lensRadius * 0.14),
+      `C ${point(lensX + lensRadius * 0.18)} ${point(lensY - lensRadius * 0.16)} ${point(lensX + lensRadius * 0.34)} ${point(lensY + lensRadius * 0.18)} ${point(lensX + lensRadius * 0.05)} ${point(lensY + lensRadius * 0.36)}`,
+      `L ${point(left + cameraWidth * 0.77)} ${point(bodyTop + cameraHeight * 0.08)}`,
+      `L ${point(left + cameraWidth * 0.9)} ${point(bodyTop + cameraHeight * 0.08)}`,
+      `L ${point(left + cameraWidth * 0.9)} ${point(bodyTop + cameraHeight * 0.24)}`,
+      `L ${point(left + cameraWidth * 0.77)} ${point(bodyTop + cameraHeight * 0.24)}`,
+      `L ${point(left + cameraWidth * 0.77)} ${point(bodyTop + cameraHeight * 0.08)}`,
+      `L ${point(left + cameraWidth * 0.9)} ${point(bodyTop + cameraHeight * 0.24)}`,
+      `L ${point(left + cameraWidth * 0.81)} ${point(bodyTop + cameraHeight * 0.08)}`,
+      `L ${point(exit.x)} ${point(exit.y)}`,
+      `C ${point(exit.x + cameraWidth * 0.04)} ${point(exit.y - cameraHeight * 0.075)} ${point(exit.x + cameraWidth * 0.07)} ${point(exit.y + cameraHeight * 0.045)} ${point(exit.x + cameraWidth * 0.025)} ${point(exit.y + cameraHeight * 0.1)}`,
+      `C ${point(exit.x - cameraWidth * 0.02)} ${point(exit.y + cameraHeight * 0.145)} ${point(exit.x - cameraWidth * 0.054)} ${point(exit.y + cameraHeight * 0.02)} ${point(exit.x)} ${point(exit.y)}`,
+    ];
+    return {
+      d: commands.join(" "),
+      exit,
+    };
+  }
+
+  function buildThreadCommands(exit, heroWidth, heroHeight) {
+    const rightX = heroWidth - Math.max(28, heroWidth * 0.018);
+    const endY = Math.max(exit.y + 900, heroHeight - 72);
+    const commands = [
+      `C ${point(exit.x + 82)} ${point(exit.y - 34)} ${point(rightX - 334)} ${point(exit.y + 18)} ${point(rightX - 212)} ${point(exit.y + 132)}`,
+      `C ${point(rightX - 94)} ${point(exit.y + 242)} ${point(rightX + 8)} ${point(exit.y + 78)} ${point(rightX - 118)} ${point(exit.y + 88)}`,
+      `C ${point(rightX - 260)} ${point(exit.y + 100)} ${point(rightX - 220)} ${point(exit.y + 314)} ${point(rightX - 56)} ${point(exit.y + 262)}`,
+      `C ${point(rightX + 66)} ${point(exit.y + 224)} ${point(rightX + 26)} ${point(exit.y + 426)} ${point(rightX - 92)} ${point(exit.y + 372)}`,
+      `C ${point(rightX - 228)} ${point(exit.y + 310)} ${point(rightX - 186)} ${point(exit.y + 540)} ${point(rightX - 10)} ${point(exit.y + 488)}`,
+    ];
+    let y = exit.y + 488;
+    let direction = -1;
+    while (y < endY - 230) {
+      const nextY = Math.min(y + 390, endY - 230);
+      const innerX = rightX - direction * 126;
+      const outerX = rightX + direction * 48;
+      const crossX = rightX - direction * 62;
+      commands.push(
+        `C ${point(outerX)} ${point(y + 92)} ${point(innerX)} ${point(y + 112)} ${point(crossX)} ${point(y + 210)}`,
+        `C ${point(rightX + direction * 92)} ${point(y + 318)} ${point(rightX + direction * 34)} ${point(y + 40)} ${point(innerX)} ${point(y + 182)}`,
+        `C ${point(rightX - direction * 236)} ${point(y + 410)} ${point(rightX + direction * 66)} ${point(nextY - 178)} ${point(rightX - direction * 10)} ${point(nextY)}`,
+      );
+      y = nextY;
+      direction *= -1;
+    }
+    commands.push(
+      `C ${point(rightX - 132)} ${point(endY - 170)} ${point(rightX + 70)} ${point(endY - 96)} ${point(rightX - 38)} ${point(endY - 42)}`,
+      `C ${point(rightX - 118)} ${point(endY - 2)} ${point(rightX + 30)} ${point(endY + 42)} ${point(rightX - 92)} ${point(endY)}`,
+    );
+    return commands.join(" ");
+  }
+
+  function rebuildPathIfNeeded() {
+    const heroRect = hero.getBoundingClientRect();
+    const coverRect = cover.getBoundingClientRect();
+    const heroWidth = Math.max(1, hero.offsetWidth);
+    const heroHeight = Math.max(window.innerHeight, hero.offsetHeight, hero.scrollHeight);
+    const key = [
+      heroWidth,
+      heroHeight,
+      Math.round(coverRect.left - heroRect.left),
+      Math.round(coverRect.top - heroRect.top),
+      Math.round(coverRect.width),
+      Math.round(coverRect.height),
+    ].join(":");
+    if (key === layoutKey && cameraLength && totalLength) return;
+
+    const coverLeft = coverRect.left - heroRect.left;
+    const coverTop = coverRect.top - heroRect.top;
+    let cameraWidth = Math.min(820, coverRect.width * 0.72);
+    let cameraHeight = cameraWidth * 0.52;
+    if (cameraHeight > coverRect.height * 0.62) {
+      cameraHeight = coverRect.height * 0.62;
+      cameraWidth = cameraHeight / 0.52;
+    }
+    const cameraBounds = {
+      left: coverLeft + (coverRect.width - cameraWidth) / 2,
+      top: coverTop + Math.max(coverRect.height * 0.08, (coverRect.height - cameraHeight) * 0.32),
+      width: cameraWidth,
+      height: cameraHeight,
+    };
+    const camera = buildCameraPath(cameraBounds);
+    const fullPath = `${camera.d} ${buildThreadCommands(camera.exit, heroWidth, heroHeight)}`;
+
+    layer.setAttribute("viewBox", `0 0 ${heroWidth} ${heroHeight}`);
+    threadPath.setAttribute("d", camera.d);
+    cameraLength = threadPath.getTotalLength();
+    threadPath.setAttribute("d", fullPath);
+    totalLength = threadPath.getTotalLength();
+    layoutKey = key;
+  }
+
+  function applyMovingLine(start) {
+    const visibleLength = Math.max(0, Math.min(cameraLength, totalLength - start));
+    threadPath.style.strokeDasharray = `${visibleLength}px ${totalLength}px`;
+    threadPath.style.strokeDashoffset = `${-start}px`;
+  }
+
+  function updateThread() {
+    ticking = false;
+    targetDistance = homeScrollDistance();
+    smoothDistance += (targetDistance - smoothDistance) * 0.18;
+    rebuildPathIfNeeded();
+
+    if (!cameraLength || !totalLength) return;
+
+    if (reducedMotionQuery.matches) {
+      applyMovingLine(0);
+      return;
+    }
+
+    const start = 8;
+    const pulled = Math.max(0, smoothDistance - start);
+    const pathStart = Math.min(totalLength, pulled * 2.05);
+
+    applyMovingLine(pathStart);
+    document.documentElement.style.setProperty("--thread-progress", Math.min(1, pathStart / totalLength).toFixed(3));
+
+    if (Math.abs(targetDistance - smoothDistance) > 0.45) {
+      ticking = true;
+      requestAnimationFrame(updateThread);
+    }
+  }
+
+  function scheduleThread() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(updateThread);
+  }
+
+  function measureThread() {
+    layoutKey = "";
+    rebuildPathIfNeeded();
+    ticking = false;
+    updateThread();
+  }
+
+  measureThread();
+  window.addEventListener("scroll", scheduleThread, { passive: true });
+  window.addEventListener("resize", measureThread);
+  if (reducedMotionQuery.addEventListener) {
+    reducedMotionQuery.addEventListener("change", scheduleThread);
+  }
 }
 
 function setupLaceCanvas() {
@@ -817,24 +1502,26 @@ function setupLaceCanvas() {
 }
 
 async function init() {
-  renderChrome();
-  bindFilters();
   bindThemePicker();
   bindUpload();
   bindDialog();
   bindTextureToggle();
   bindExportAndReset();
+  bindKineticScenes();
   bindPointerMotion();
+  setupCameraThread();
   setupLaceCanvas();
 
   const savedWorks = await getAllWorks();
   state.works = savedWorks.length
     ? savedWorks.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)))
     : seedWorks.map((work) => ({ ...work, imageSrc: createSeedImage(work) }));
-  renderGallery();
+  renderChrome();
+  window.addEventListener("hashchange", () => transitionTo(renderRoute));
+  renderRoute();
 }
 
 init().catch((error) => {
   console.error(error);
-  elements.galleryGrid.innerHTML = "<p>Portfolio failed to load. Please refresh the page.</p>";
+  elements.departmentList.innerHTML = "<li>Portfolio failed to load. Please refresh the page.</li>";
 });

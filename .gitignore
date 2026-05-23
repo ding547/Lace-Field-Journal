@@ -1,4 +1,4 @@
-.DS_Store
+.netlify/
+node_modules/
 qa-screenshots/
-assets/img_*.jpg
-assets/vintage-camera-newsprint.png
+*.log

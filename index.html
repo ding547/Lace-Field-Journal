@@ -21,13 +21,13 @@
     <canvas id="laceCanvas" aria-hidden="true"></canvas>
 
     <header class="site-header">
-      <a class="brand" href="#top" aria-label="Lace Field Journal home">
+      <a class="brand" href="#/" aria-label="Lace Field Journal home">
         <span class="brand-mark"></span>
         <span>Lace Field Journal</span>
       </a>
       <nav class="site-nav" aria-label="Primary navigation">
-        <a href="#portfolio">Archive</a>
-        <a href="#studio">Studio</a>
+        <a href="#/">Archive</a>
+        <a class="upload-nav" href="#/studio">Upload</a>
         <button class="icon-button" id="textureToggle" type="button" aria-pressed="true" title="Toggle ink texture">
           <span class="button-dot"></span>
           <span class="sr-only">Toggle ink texture</span>
@@ -36,7 +36,11 @@
     </header>
 
     <main id="top">
-      <section class="hero-section" aria-labelledby="heroTitle">
+      <section class="hero-section app-view" id="homeView" aria-labelledby="heroTitle">
+        <svg class="home-thread-layer" aria-hidden="true">
+          <path id="homeThreadLine" class="home-thread-line"></path>
+        </svg>
+
         <div class="newspaper-rule">
           <span>Personal photography archive</span>
           <span>RAW / HEIC / JPG ledger</span>
@@ -47,48 +51,81 @@
           <p class="micro-label">Front page</p>
           <h1 id="heroTitle">Lace Field Journal</h1>
           <p class="dateline">Photographs, field notes, quiet weather, and private negatives.</p>
+          <p class="byline">A personal photography archive by Ke Ding.</p>
         </div>
 
-        <div class="hero-layout">
-          <article class="lead-story">
-            <p class="section-label">Lead story</p>
-            <h2>Images printed like evidence, edited with silence.</h2>
-            <p>
-              A simplified portfolio for personal photographic work. Each image reads as a small
-              newspaper section, then opens into a dense vintage poster page shaped by its own tone.
-            </p>
-          </article>
+        <div class="cover-line-scene" aria-hidden="true"></div>
 
-          <figure class="hero-camera" id="heroPlate">
-            <img src="./assets/vintage-camera-newsprint.jpg" alt="Vintage camera and lens on aged newspaper" />
-            <figcaption>
-              <span>Optical desk</span>
-              <span>35mm / archived light</span>
-            </figcaption>
-          </figure>
-
-          <aside class="issue-notes" aria-label="Archive themes">
+        <section class="department-section" aria-labelledby="departmentTitle">
+          <div class="department-heading">
             <p class="section-label">Departments</p>
-            <ul id="departmentList"></ul>
+            <h2 id="departmentTitle">Archive Index</h2>
+          </div>
+          <ul class="department-grid" id="departmentList"></ul>
+        </section>
+
+        <section class="home-note" aria-labelledby="homeNoteTitle">
+          <p class="section-label">Field Note</p>
+          <div class="home-note-layout">
+            <div>
+              <h2 id="homeNoteTitle">A quiet archive of light, weather, and human distance.</h2>
+              <p>
+                This journal keeps photographs as field notes: fragments of people, terrain,
+                rooms, night streets, motion, and accidents that stayed.
+              </p>
+            </div>
+
+            <dl class="archive-stamps">
+              <div>
+                <dt>Filed</dt>
+                <dd>Vol. 01</dd>
+              </div>
+              <div>
+                <dt>Format</dt>
+                <dd>RAW / JPG / HEIC</dd>
+              </div>
+              <div>
+                <dt>Method</dt>
+                <dd>Halftone / Negative / Field Index</dd>
+              </div>
+            </dl>
+          </div>
+        </section>
+      </section>
+
+      <section class="category-view app-view" id="categoryView" hidden>
+        <div class="archive-atmosphere" id="archiveAtmosphere" aria-hidden="true"></div>
+        <header class="category-hero">
+          <a class="route-back" href="#/">Archive index</a>
+          <p class="micro-label" id="categoryKicker"></p>
+          <h2 id="categoryTitle"></h2>
+          <p id="categorySubtitle"></p>
+        </header>
+        <div class="work-scroll-list" id="workScrollList" aria-live="polite"></div>
+      </section>
+
+      <section class="detail-view app-view" id="detailView" hidden>
+        <div class="detail-atmosphere" id="detailAtmosphere" aria-hidden="true"></div>
+        <a class="route-back" id="detailBack" href="#/">Archive index</a>
+        <article class="detail-layout">
+          <figure class="detail-figure">
+            <img id="detailImage" alt="" />
+          </figure>
+          <aside class="detail-copy">
+            <p class="micro-label" id="detailKicker"></p>
+            <h2 id="detailTitle"></h2>
+            <p id="detailSubtitle"></p>
+            <dl class="detail-meta" id="detailMeta"></dl>
+            <p id="detailDescription"></p>
+            <div class="detail-actions">
+              <a class="raw-link" id="detailRaw" href="#" download hidden>Download RAW master</a>
+              <button class="delete-link" id="detailDelete" type="button">Delete photograph</button>
+            </div>
           </aside>
-        </div>
+        </article>
       </section>
 
-      <section class="portfolio-section" id="portfolio" aria-labelledby="portfolioTitle">
-        <div class="section-heading">
-          <p class="micro-label">Photographic record</p>
-          <h2 id="portfolioTitle">Archive Desk</h2>
-          <p>
-            Newsprint cards for human scenes, terrain, still life, motion, night studies, and
-            miscellaneous notes.
-          </p>
-        </div>
-
-        <div class="filter-bar" id="filterBar" aria-label="Filter portfolio categories"></div>
-        <div class="gallery-grid" id="galleryGrid" aria-live="polite"></div>
-      </section>
-
-      <section class="studio-section" id="studio" aria-labelledby="studioTitle">
+      <section class="studio-section app-view" id="studioView" aria-labelledby="studioTitle" hidden>
         <div class="section-heading studio-heading">
           <p class="micro-label">Private studio</p>
           <h2 id="studioTitle">Add a Photograph</h2>
@@ -140,6 +177,22 @@
               <input name="subtitle" type="text" placeholder="Street note / late afternoon" />
             </label>
             <label>
+              <span>Location</span>
+              <input name="location" type="text" placeholder="Columbus, OH" />
+            </label>
+            <label>
+              <span>Date</span>
+              <input name="date" type="text" placeholder="2026" />
+            </label>
+            <label>
+              <span>Camera / Lens</span>
+              <input name="camera" type="text" placeholder="35mm / 50mm" />
+            </label>
+            <label>
+              <span>Series</span>
+              <input name="series" type="text" placeholder="Field notes" />
+            </label>
+            <label>
               <span>Introduction</span>
               <textarea
                 name="description"
@@ -173,6 +226,7 @@
         <section class="poster-copy">
           <p id="dialogDescription"></p>
           <a class="raw-link" id="dialogRaw" href="#" download hidden>Download RAW master</a>
+          <button class="delete-link" id="dialogDelete" type="button">Delete photograph</button>
         </section>
       </article>
     </dialog>
@@ -190,6 +244,7 @@
             <span class="work-summary"></span>
           </span>
         </button>
+        <button class="work-delete" type="button">Delete</button>
       </article>
     </template>
 
