@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import hashlib
 import json
 import re
 import shutil
@@ -11,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 WORKS_JSON = ROOT / "data" / "works.json"
 ASSET_ROOT = ROOT / "assets" / "photos"
+PROCESSOR = ROOT / "scripts" / "process_photo.swift"
 
 CATEGORIES = {
     "human": "human",
@@ -52,9 +54,13 @@ def run_checked(command):
     return result
 
 
-def require_sips():
+def require_tools():
     if not shutil.which("sips"):
         raise SystemExit("sips was not found. On macOS it is usually available at /usr/bin/sips.")
+    if not shutil.which("swift"):
+        raise SystemExit("swift was not found. Install Apple's command line tools, then run this script again.")
+    if not PROCESSOR.exists():
+        raise SystemExit(f"Missing image processor: {PROCESSOR.relative_to(ROOT)}")
 
 
 def unique_path(directory, stem, suffix, replace):
@@ -83,29 +89,29 @@ def image_size(path):
     return width, height
 
 
+def watermark_for_id(work_id):
+    digest = hashlib.sha256(work_id.encode("utf-8")).digest()
+    x = 14 + digest[0] % 73
+    y = 16 + digest[1] % 69
+    rotate = (digest[2] % 25) - 12
+    scale = round(0.82 + (digest[3] % 36) / 100, 2)
+    return {
+        "text": "DK",
+        "x": x,
+        "y": y,
+        "rotate": rotate,
+        "scale": scale,
+    }
+
+
 def convert_to_jpeg(source, destination, max_edge, quality):
     destination.parent.mkdir(parents=True, exist_ok=True)
-    result = run(
-        [
-            "sips",
-            "-s",
-            "format",
-            "jpeg",
-            "-s",
-            "formatOptions",
-            str(quality),
-            "-Z",
-            str(max_edge),
-            str(source),
-            "--out",
-            str(destination),
-        ]
-    )
+    result = run(["swift", str(PROCESSOR), str(source), str(destination), str(max_edge), str(quality)])
     if result.returncode != 0:
         message = result.stderr.strip() or result.stdout.strip()
         raise SystemExit(
-            "Could not convert this file with macOS sips. Export a JPG from Lightroom/Capture One/Photos first, "
-            f"then run this script on that JPG.\n\nsips said:\n{message}"
+            "Could not convert this file with macOS ImageIO. Export a JPG from Lightroom/Capture One/Photos first, "
+            f"then run this script on that JPG.\n\nThe processor said:\n{message}"
         )
 
 
@@ -141,6 +147,7 @@ def build_work(args, image_path, width, height, work_id):
         "imageSrc": f"./{image_path.relative_to(ROOT).as_posix()}",
         "width": width,
         "height": height,
+        "watermark": watermark_for_id(work_id),
     }
 
 
@@ -165,7 +172,7 @@ def parse_args():
 
 
 def main():
-    require_sips()
+    require_tools()
     args = parse_args()
     source = Path(args.source).expanduser().resolve()
     if not source.exists():
@@ -194,6 +201,8 @@ def main():
     save_works(works)
     print(f"Imported: {destination.relative_to(ROOT)}")
     print(f"Updated: {WORKS_JSON.relative_to(ROOT)}")
+    print("Web image: resized, JPEG-compressed, and metadata stripped.")
+    print("Watermark: DK overlay position recorded for archive views.")
     if args.commit or args.push:
         message = args.message or f"Add {args.title} photograph"
         run_checked(["git", "add", str(destination.relative_to(ROOT)), str(WORKS_JSON.relative_to(ROOT))])

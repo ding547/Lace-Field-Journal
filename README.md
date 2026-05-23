@@ -11,7 +11,7 @@ A zero-dependency static personal photography portfolio with:
 - IndexedDB persistence in the visitor/admin browser
 - JSON manifest export for migration to a hosted backend
 - Published photographs loaded from `data/works.json`
-- Local photo import script for web-ready JPG output and Git publishing
+- Local photo import script for web-ready JPG output, metadata stripping, and Git publishing
 
 ## Public Site
 
@@ -63,33 +63,101 @@ It should print:
 ssh -i ~/.ssh/lace_field_journal_github -o IdentitiesOnly=yes
 ```
 
-## Add A Public Photograph
+## Batch Add Public Photographs
 
-Use the import script for JPG, PNG, HEIC, TIFF, or a RAW file that macOS can read:
+Use the import script for JPG, PNG, HEIC, TIFF, or a RAW file that macOS can read. The command stays local unless you add `--push`.
+
+First photograph:
 
 ```bash
-python3 scripts/import_photo.py "/Users/keding/Downloads/IMG_7759.JPG" \
-  --category terrain \
-  --title "Blue Distance" \
-  --subtitle "Low horizon / Atlantic weather note" \
-  --location "Atlantic Coast" \
+python3 scripts/import_photo.py "/Users/keding/Downloads/P5156377.JPG" \
+  --category night-desk \
+  --title "Rain Ledger" \
+  --subtitle "Fogged glass / evening harbor / upper floors" \
+  --location "Space Needle, Seattle, WA" \
   --date "2026" \
-  --camera "Olympus E-M10 Mark IV / 150mm" \
-  --series "Weather Ledger" \
-  --push
+  --camera "Olympus E-M10 Mark IV / 31mm" \
+  --series "Window Weather"
 ```
 
-`--push` does the full simple workflow: creates a compressed public JPG in `assets/photos/...`, updates `data/works.json`, commits the changed files, and pushes `main` to GitHub. Netlify then deploys automatically.
-
-If you want to review before publishing, omit `--push`:
+Second photograph:
 
 ```bash
-python3 scripts/import_photo.py "/path/to/photo.jpg" --category human --title "Photograph Title"
+python3 scripts/import_photo.py "/Users/keding/Downloads/IMG_7751.JPG" \
+  --category terrain \
+  --title "Driftwood Tide" \
+  --subtitle "Cold shore / fallen timber / distant stacks" \
+  --location "Rialto Beach, WA" \
+  --date "2026" \
+  --camera "Olympus E-M10 Mark IV / 22mm" \
+  --series "Weather Ledger"
+```
+
+Third, fourth, and later photographs use the same shape. As long as you do not add `--push`, these imports only update local files:
+
+```text
+assets/photos/...
+data/works.json
+```
+
+They do not trigger a Netlify deploy.
+
+The import script creates a web archive image, not a master file:
+
+```text
+long edge: 2200px by default
+format: compressed JPG
+metadata: stripped during export
+watermark: subtle DK overlay position recorded for archive list views, hidden on the detail view
+```
+
+This removes real EXIF/GPS/camera metadata from the public JPG while keeping intentional display text in the site, such as camera, location, and series.
+
+## Batch Delete Public Photographs
+
+To delete a photograph locally without deploying:
+
+```bash
+python3 scripts/delete_photo.py --title "Rain Ledger" --category night-desk
+```
+
+Or delete by exact work id:
+
+```bash
+python3 scripts/delete_photo.py --id night-rain-ledger
+```
+
+This removes the entry from `data/works.json` and removes the matching JPG from `assets/photos/...`. It does not commit or push.
+
+If you only want to remove the work from the site data but keep the file in the repo folder:
+
+```bash
+python3 scripts/delete_photo.py --title "Rain Ledger" --category night-desk --keep-file
+```
+
+## Publish One Batch
+
+After importing and deleting as many photographs as needed, publish everything once:
+
+```bash
 git status
 git add data/works.json assets/photos
-git commit -m "Add Photograph Title"
+git commit -m "Add new photograph batch"
 git push origin main
 ```
+
+`git push origin main` sends the local commit to GitHub's `main` branch. Because Netlify is connected to this repo, it deploys once after that push.
+
+The simple rule is:
+
+```text
+Import or delete many photographs locally.
+Do not push yet.
+When ready, git add + git commit + git push once.
+Netlify deploys once.
+```
+
+`--push` still exists for emergencies or tiny one-photo updates. It commits and pushes immediately, which also triggers Netlify immediately.
 
 The current public photograph data lives in:
 

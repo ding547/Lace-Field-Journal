@@ -525,6 +525,31 @@ function getImageSrc(work) {
   return work.imageSrc;
 }
 
+function seededWatermark(work) {
+  if (work.watermark) return work.watermark;
+  const seed = String(work.id || work.title || "dk");
+  let hash = 0;
+  for (let index = 0; index < seed.length; index += 1) {
+    hash = (hash * 31 + seed.charCodeAt(index)) >>> 0;
+  }
+  return {
+    text: "DK",
+    x: 14 + (hash % 73),
+    y: 16 + ((hash >>> 8) % 69),
+    rotate: ((hash >>> 16) % 25) - 12,
+    scale: 0.82 + ((hash >>> 24) % 36) / 100,
+  };
+}
+
+function watermarkStyle(work) {
+  const mark = seededWatermark(work);
+  const x = Number(mark.x) || 50;
+  const y = Number(mark.y) || 50;
+  const rotate = Number(mark.rotate) || 0;
+  const scale = Number(mark.scale) || 1;
+  return `--wm-x:${x}%;--wm-y:${y}%;--wm-rotate:${rotate}deg;--wm-scale:${scale}`;
+}
+
 function kineticSceneSvg(work) {
   if (!work.scene || !work.palette) return "";
   const [ink, accent, paper, blue] = work.palette;
@@ -719,6 +744,7 @@ function renderWorkScrollList(category) {
       return `<article class="work-row" data-work-id="${escapeHtml(work.id)}" style="--work-ratio:${width} / ${height}">
         <a class="work-row-image" href="${workRoute(work)}" aria-label="Open ${escapeHtml(work.title)}">
           <img src="${src}" alt="${escapeHtml(work.title)}" width="${width}" height="${height}" loading="${index < 2 ? "eager" : "lazy"}" decoding="async" style="view-transition-name: photo-${escapeHtml(work.id)}" />
+          <span class="work-watermark" style="${watermarkStyle(work)}" aria-hidden="true">DK</span>
         </a>
         <div class="work-row-copy">
           <p class="work-index">${escapeHtml(issue)}</p>

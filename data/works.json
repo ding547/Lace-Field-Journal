@@ -12,7 +12,14 @@
     "format": "Web JPG",
     "imageSrc": "./assets/photos/terrain/blue-distance.jpg",
     "width": 2200,
-    "height": 1650
+    "height": 1650,
+    "watermark": {
+      "text": "DK",
+      "x": 17,
+      "y": 72,
+      "rotate": 1,
+      "scale": 0.99
+    }
   },
   {
     "id": "terrain-driftwood-tide",
@@ -27,7 +34,14 @@
     "format": "Web JPG",
     "imageSrc": "./assets/photos/terrain/driftwood-tide.jpg",
     "width": 2200,
-    "height": 1650
+    "height": 1650,
+    "watermark": {
+      "text": "DK",
+      "x": 75,
+      "y": 50,
+      "rotate": -12,
+      "scale": 1.06
+    }
   },
   {
     "id": "night-rain-ledger",
@@ -42,6 +56,13 @@
     "format": "Web JPG",
     "imageSrc": "./assets/photos/night-desk/rain-ledger.jpg",
     "width": 2200,
-    "height": 1650
+    "height": 1650,
+    "watermark": {
+      "text": "DK",
+      "x": 27,
+      "y": 69,
+      "rotate": -3,
+      "scale": 1.14
+    }
   }
 ]

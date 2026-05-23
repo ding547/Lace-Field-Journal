@@ -15,7 +15,7 @@
   --clay: #a46f5f;
   --surface: rgba(250, 247, 240, 0.14);
   --surface-strong: rgba(250, 247, 240, 0.24);
-  --wave-opacity: 0.42;
+  --wave-opacity: 0.56;
   --grain-opacity: 0.18;
   --lace-opacity: 0.14;
   --shadow: 0 34px 95px rgba(28, 20, 13, 0.28);
@@ -68,9 +68,10 @@ body::after {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: url("./assets/morandi-halftone-waves.svg?v=20260523c") center / cover no-repeat;
+  background: url("./assets/morandi-halftone-waves.svg?v=20260523d") center / cover no-repeat;
   opacity: var(--wave-opacity);
-  mix-blend-mode: multiply;
+  mix-blend-mode: normal;
+  filter: saturate(0.82) contrast(0.96);
 }
 
 body.texture-off .paper-grain,
@@ -403,6 +404,9 @@ main {
   background-position: 0 0, 4px 7px, 0 0;
   -webkit-background-clip: text;
   background-clip: text;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  padding-block: 0.07em 0.05em;
   text-shadow:
     0 0 0 rgba(18, 15, 12, 0.66),
     0 1px 0 rgba(255, 248, 232, 0.12);
@@ -2207,6 +2211,25 @@ body:not(.admin-mode) .upload-nav {
   max-width: 100%;
   height: min(72svh, 760px);
   object-fit: contain;
+}
+
+.work-watermark {
+  position: absolute;
+  left: var(--wm-x, 78%);
+  top: var(--wm-y, 78%);
+  z-index: 2;
+  pointer-events: none;
+  color: rgba(250, 247, 240, 0.38);
+  font-family: "Snell Roundhand", "Brush Script MT", "Noteworthy", cursive;
+  font-size: clamp(42px, 7vw, 112px);
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0.44;
+  transform: translate(-50%, -50%) rotate(var(--wm-rotate, -8deg)) scale(var(--wm-scale, 1));
+  text-shadow:
+    0 1px 12px rgba(18, 15, 12, 0.22),
+    0 0 1px rgba(250, 247, 240, 0.7);
+  mix-blend-mode: soft-light;
 }
 
 .work-row-copy {
