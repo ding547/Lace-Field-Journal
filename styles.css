@@ -1,8 +1,8 @@
 :root {
   color-scheme: light;
-  --paper: #f3efe7;
-  --paper-light: #f7f3ec;
-  --paper-deep: #b8b0a2;
+  --paper: #d2bd91;
+  --paper-light: #eee4d1;
+  --paper-deep: #a99470;
   --ink: #17130f;
   --muted: #584d41;
   --line: rgba(23, 19, 15, 0.28);
@@ -13,8 +13,8 @@
   --mauve: #8a737f;
   --sage: #87917a;
   --clay: #a46f5f;
-  --surface: rgba(239, 235, 226, 0.48);
-  --surface-strong: rgba(244, 240, 232, 0.72);
+  --surface: rgba(238, 228, 209, 0.46);
+  --surface-strong: rgba(241, 232, 215, 0.7);
   --shadow: 0 34px 95px rgba(28, 20, 13, 0.28);
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --grid-max: min(1420px, calc(100vw - 40px));
@@ -32,6 +32,7 @@
 
 html {
   scroll-behavior: smooth;
+  background: var(--paper);
 }
 
 body {
@@ -40,7 +41,7 @@ body {
   min-height: 100vh;
   margin: 0;
   overflow-x: hidden;
-  background: transparent;
+  background: var(--paper);
   color: var(--ink);
   font-family: var(--serif);
   letter-spacing: 0;
@@ -50,13 +51,13 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: -5;
+  z-index: -4;
   pointer-events: none;
   background:
-    linear-gradient(rgba(247, 243, 236, 0.2), rgba(247, 243, 236, 0.2)),
+    linear-gradient(rgba(210, 189, 145, 0.04), rgba(210, 189, 145, 0.04)),
     var(--page-background),
     var(--paper);
-  background-size: auto, cover, 22px 22px, 22px 22px, auto;
+  background-size: auto, 100% 100%, 22px 22px, 22px 22px, auto;
   background-position: center;
 }
 
@@ -229,13 +230,16 @@ main {
 .hero-section,
 .portfolio-section,
 .studio-section {
-  width: var(--grid-max);
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding-inline: max(20px, calc((100vw - 1420px) / 2));
 }
 
 .hero-section {
   min-height: 100svh;
-  padding: 104px 0 64px;
+  padding-top: 104px;
+  padding-bottom: 64px;
 }
 
 .newspaper-rule {
@@ -311,14 +315,16 @@ main {
   color: transparent;
   -webkit-text-fill-color: transparent;
   background-image:
-    radial-gradient(circle, rgba(18, 15, 12, 0.98) 0 0.86px, transparent 1.2px),
-    radial-gradient(circle, rgba(18, 15, 12, 0.58) 0 1.35px, transparent 1.95px),
-    linear-gradient(rgba(18, 15, 12, 0.84), rgba(18, 15, 12, 0.84));
+    radial-gradient(circle, rgba(18, 15, 12, 1) 0 0.95px, transparent 1.3px),
+    radial-gradient(circle, rgba(18, 15, 12, 0.5) 0 1.45px, transparent 2.05px),
+    linear-gradient(rgba(18, 15, 12, 0.34), rgba(18, 15, 12, 0.34));
   background-size: 5px 5px, 13px 13px, 100% 100%;
   background-position: 0 0, 4px 7px, 0 0;
   -webkit-background-clip: text;
   background-clip: text;
-  text-shadow: 0 1px 0 rgba(255, 248, 232, 0.18);
+  text-shadow:
+    0 0 0 rgba(18, 15, 12, 0.58),
+    0 1px 0 rgba(255, 248, 232, 0.12);
 }
 
 .dateline {
