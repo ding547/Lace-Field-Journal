@@ -1,8 +1,8 @@
 :root {
   color-scheme: light;
-  --paper: #ebe5d8;
-  --paper-light: #f1eadf;
-  --paper-deep: #aca391;
+  --paper: #f3efe7;
+  --paper-light: #f7f3ec;
+  --paper-deep: #b8b0a2;
   --ink: #17130f;
   --muted: #584d41;
   --line: rgba(23, 19, 15, 0.28);
@@ -13,19 +13,17 @@
   --mauve: #8a737f;
   --sage: #87917a;
   --clay: #a46f5f;
-  --surface: rgba(224, 219, 207, 0.58);
-  --surface-strong: rgba(232, 226, 215, 0.8);
+  --surface: rgba(239, 235, 226, 0.48);
+  --surface-strong: rgba(244, 240, 232, 0.72);
   --shadow: 0 34px 95px rgba(28, 20, 13, 0.28);
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --grid-max: min(1420px, calc(100vw - 40px));
   --serif: Newsreader, Georgia, "Times New Roman", serif;
   --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --page-background:
-    linear-gradient(rgba(239, 233, 222, 0.22), rgba(239, 233, 222, 0.22)),
     url("./assets/morandi-halftone-waves.svg"),
     linear-gradient(rgba(23, 19, 15, 0.036) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(23, 19, 15, 0.03) 1px, transparent 1px),
-    var(--paper);
+    linear-gradient(90deg, rgba(23, 19, 15, 0.03) 1px, transparent 1px);
 }
 
 * {
@@ -37,16 +35,29 @@ html {
 }
 
 body {
+  position: relative;
+  isolation: isolate;
   min-height: 100vh;
   margin: 0;
   overflow-x: hidden;
-  background: var(--page-background);
-  background-size: auto, cover, 22px 22px, 22px 22px, auto;
-  background-attachment: fixed, fixed, fixed, fixed, fixed;
-  background-position: center;
+  background: transparent;
   color: var(--ink);
   font-family: var(--serif);
   letter-spacing: 0;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -5;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(247, 243, 236, 0.2), rgba(247, 243, 236, 0.2)),
+    var(--page-background),
+    var(--paper);
+  background-size: auto, cover, 22px 22px, 22px 22px, auto;
+  background-position: center;
 }
 
 body.texture-off .paper-grain,
@@ -302,7 +313,7 @@ main {
   background-image:
     radial-gradient(circle, rgba(18, 15, 12, 0.98) 0 0.86px, transparent 1.2px),
     radial-gradient(circle, rgba(18, 15, 12, 0.58) 0 1.35px, transparent 1.95px),
-    linear-gradient(rgba(18, 15, 12, 0.58), rgba(18, 15, 12, 0.58));
+    linear-gradient(rgba(18, 15, 12, 0.84), rgba(18, 15, 12, 0.84));
   background-size: 5px 5px, 13px 13px, 100% 100%;
   background-position: 0 0, 4px 7px, 0 0;
   -webkit-background-clip: text;
@@ -1553,10 +1564,7 @@ main {
 
 body[data-route="category"],
 body[data-route="work"] {
-  background: var(--page-background);
-  background-size: auto, cover, 22px 22px, 22px 22px, auto;
-  background-attachment: fixed, fixed, fixed, fixed, fixed;
-  background-position: center;
+  background: transparent;
 }
 
 body[data-route="category"] .paper-grain,
