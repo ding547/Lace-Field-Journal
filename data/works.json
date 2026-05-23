@@ -13,5 +13,20 @@
     "imageSrc": "./assets/photos/terrain/blue-distance.jpg",
     "width": 2200,
     "height": 1650
+  },
+  {
+    "id": "terrain-driftwood-tide",
+    "title": "Driftwood Tide",
+    "category": "terrain",
+    "subtitle": "Cold shore / fallen timber / distant stacks",
+    "description": "",
+    "location": "Rialto Beach, WA",
+    "date": "2026",
+    "camera": "Olympus E-M10 Mark IV / 22mm",
+    "series": "Weather Ledger",
+    "format": "Web JPG",
+    "imageSrc": "./assets/photos/terrain/driftwood-tide.jpg",
+    "width": 2200,
+    "height": 1650
   }
 ]
