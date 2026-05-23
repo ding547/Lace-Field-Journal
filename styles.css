@@ -1,25 +1,33 @@
 :root {
   color-scheme: light;
-  --paper: #d8c2a1;
-  --paper-light: #eadcc3;
-  --paper-deep: #b89363;
-  --ink: #17120d;
-  --muted: #5d4a36;
-  --line: rgba(23, 18, 13, 0.28);
-  --red: #8f3327;
-  --blue: #263f4a;
-  --green: #40533b;
-  --ochre: #c08b3e;
+  --paper: #d6d0c2;
+  --paper-light: #ece5d8;
+  --paper-deep: #a99b86;
+  --ink: #17130f;
+  --muted: #584d41;
+  --line: rgba(23, 19, 15, 0.28);
+  --red: #8b453d;
+  --blue: #49636b;
+  --green: #68745f;
+  --ochre: #a98255;
+  --mauve: #8a737f;
+  --sage: #87917a;
+  --clay: #a46f5f;
+  --surface: rgba(224, 219, 207, 0.58);
+  --surface-strong: rgba(232, 226, 215, 0.8);
   --shadow: 0 34px 95px rgba(28, 20, 13, 0.28);
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --grid-max: min(1420px, calc(100vw - 40px));
   --serif: Newsreader, Georgia, "Times New Roman", serif;
   --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --page-background:
-    radial-gradient(circle at 74% 22%, rgba(143, 51, 39, 0.16), transparent 34vw),
-    radial-gradient(circle at 18% 78%, rgba(38, 63, 74, 0.14), transparent 32vw),
-    linear-gradient(rgba(23, 18, 13, 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(23, 18, 13, 0.045) 1px, transparent 1px),
+    radial-gradient(120% 78% at 18% 18%, rgba(138, 115, 127, 0.2), transparent 58%),
+    radial-gradient(108% 82% at 88% 22%, rgba(73, 99, 107, 0.22), transparent 56%),
+    radial-gradient(110% 74% at 34% 88%, rgba(135, 145, 122, 0.22), transparent 58%),
+    repeating-radial-gradient(ellipse at 48% -8%, rgba(164, 111, 95, 0.22) 0 7px, transparent 8px 42px),
+    repeating-radial-gradient(ellipse at 58% 120%, rgba(73, 99, 107, 0.18) 0 6px, transparent 7px 46px),
+    linear-gradient(rgba(23, 19, 15, 0.052) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 19, 15, 0.04) 1px, transparent 1px),
     var(--paper);
 }
 
@@ -36,7 +44,7 @@ body {
   margin: 0;
   overflow-x: hidden;
   background: var(--page-background);
-  background-size: auto, auto, 22px 22px, 22px 22px, auto;
+  background-size: auto, auto, auto, 920px 520px, 860px 500px, 22px 22px, 22px 22px, auto;
   color: var(--ink);
   font-family: var(--serif);
   letter-spacing: 0;
@@ -82,14 +90,17 @@ img {
   inset: 0;
   z-index: -3;
   pointer-events: none;
-  opacity: 0.76;
+  opacity: 0.82;
   mix-blend-mode: multiply;
   background-image:
-    radial-gradient(circle, rgba(23, 18, 13, 0.28) 0 0.8px, transparent 1.15px),
-    radial-gradient(circle, rgba(255, 245, 220, 0.42) 0 1px, transparent 1.45px),
-    repeating-linear-gradient(0deg, rgba(23, 18, 13, 0.06) 0 1px, transparent 1px 5px);
-  background-position: 0 0, 7px 9px, 0 0;
-  background-size: 9px 9px, 14px 14px, auto;
+    radial-gradient(circle, rgba(23, 19, 15, 0.34) 0 0.62px, transparent 1px),
+    radial-gradient(circle, rgba(23, 19, 15, 0.2) 0 1.15px, transparent 1.75px),
+    radial-gradient(circle, rgba(73, 99, 107, 0.16) 0 1.7px, transparent 2.4px),
+    radial-gradient(circle, rgba(139, 69, 61, 0.14) 0 1.25px, transparent 2px),
+    repeating-radial-gradient(ellipse at 52% 18%, rgba(23, 19, 15, 0.06) 0 2px, transparent 3px 34px),
+    repeating-linear-gradient(0deg, rgba(23, 19, 15, 0.045) 0 1px, transparent 1px 6px);
+  background-position: 0 0, 7px 11px, 18px 5px, 28px 17px, 0 0, 0 0;
+  background-size: 8px 8px, 17px 17px, 31px 31px, 43px 43px, 760px 430px, auto;
   transition: opacity 600ms var(--ease);
 }
 
@@ -117,7 +128,7 @@ img {
   padding: 0 10px 0 18px;
   border: 1px solid rgba(23, 18, 13, 0.18);
   border-radius: 999px;
-  background: rgba(233, 220, 194, 0.72);
+  background: rgba(232, 226, 215, 0.72);
   -webkit-backdrop-filter: blur(24px) saturate(1.08);
   backdrop-filter: blur(24px) saturate(1.08);
   box-shadow: 0 20px 70px rgba(31, 22, 14, 0.14);
@@ -245,10 +256,7 @@ main {
   justify-items: center;
   padding: clamp(28px, 4vw, 46px) 0 clamp(24px, 3vw, 38px);
   text-align: center;
-  background:
-    radial-gradient(circle, rgba(23, 18, 13, 0.14) 0 0.8px, transparent 1.25px),
-    repeating-linear-gradient(135deg, rgba(23, 18, 13, 0.026) 0 1px, transparent 1px 15px);
-  background-size: 9px 9px, auto;
+  background: transparent;
 }
 
 .micro-label,
@@ -280,6 +288,29 @@ main {
   font-weight: 800;
   letter-spacing: 0;
   overflow-wrap: normal;
+}
+
+.hero-masthead h1,
+.lead-story h2,
+.section-heading h2,
+.department-heading h2,
+.department-copy strong,
+.home-note h2,
+.category-hero h2,
+.work-row-copy h3,
+.detail-copy h2,
+.poster-header h3 {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-image:
+    radial-gradient(circle, rgba(23, 19, 15, 0.94) 0 0.72px, transparent 1.05px),
+    radial-gradient(circle, rgba(73, 99, 107, 0.34) 0 1.2px, transparent 1.75px),
+    linear-gradient(104deg, #19130f 0%, #5c4a42 32%, #8b453d 52%, #49636b 74%, #17130f 100%);
+  background-size: 5px 5px, 13px 13px, 100% 100%;
+  background-position: 0 0, 4px 7px, 0 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: 0 1px 0 rgba(255, 248, 232, 0.18);
 }
 
 .dateline {
@@ -454,7 +485,7 @@ main {
 .theme-button {
   border: 1px solid rgba(23, 18, 13, 0.28);
   border-radius: 2px;
-  background: rgba(234, 220, 195, 0.52);
+  background: var(--surface);
   color: var(--ink);
   transition:
     transform 260ms var(--ease),
@@ -831,7 +862,7 @@ main {
   min-height: 34px;
   padding: 0 10px;
   border: 1px solid rgba(23, 18, 13, 0.32);
-  background: rgba(232, 217, 191, 0.9);
+  background: var(--surface-strong);
   color: var(--ink);
   font-family: var(--mono);
   font-size: 11px;
@@ -856,7 +887,7 @@ main {
   z-index: 1;
   padding: 7px 9px;
   border: 1px solid rgba(23, 18, 13, 0.32);
-  background: rgba(232, 217, 191, 0.82);
+  background: var(--surface-strong);
   color: var(--ink);
   font-size: 11px;
   font-weight: 700;
@@ -920,7 +951,7 @@ main {
 .drop-zone,
 .editorial-fields {
   border: 1px solid var(--line);
-  background: rgba(234, 220, 195, 0.62);
+  background: var(--surface);
   box-shadow: 0 22px 70px rgba(28, 20, 13, 0.12);
 }
 
@@ -1049,7 +1080,7 @@ main {
   width: 100%;
   border: 1px solid rgba(23, 18, 13, 0.26);
   border-radius: 2px;
-  background: rgba(230, 214, 187, 0.76);
+  background: rgba(232, 226, 215, 0.76);
   color: var(--ink);
   outline: 0;
   padding: 12px;
@@ -1101,14 +1132,14 @@ main {
 }
 
 .ghost-button {
-  background: rgba(234, 220, 195, 0.58);
+  background: var(--surface);
   color: var(--ink);
 }
 
 .work-dialog {
   --poster-ink: #17120d;
   --poster-accent: #8f3327;
-  --poster-paper: #d8c2a1;
+  --poster-paper: #d6d0c2;
   --poster-blue: #263f4a;
   width: min(1180px, calc(100vw - 26px));
   max-height: min(880px, calc(100svh - 26px));
@@ -1159,7 +1190,7 @@ main {
   height: 42px;
   border: 1px solid rgba(23, 18, 13, 0.32);
   border-radius: 50%;
-  background: rgba(232, 217, 191, 0.84);
+  background: var(--surface-strong);
   color: var(--poster-ink);
   font-family: Arial, sans-serif;
   font-size: 28px;
@@ -1177,7 +1208,7 @@ main {
   padding: clamp(18px, 3vw, 34px);
   background:
     linear-gradient(90deg, rgba(143, 51, 39, 0.2), transparent 34%, rgba(38, 63, 74, 0.18)),
-    rgba(216, 194, 161, 0.78);
+    rgba(214, 208, 194, 0.72);
 }
 
 .poster-page::after {
@@ -1247,7 +1278,7 @@ main {
   border-left: 1px solid rgba(23, 18, 13, 0.42);
   background:
     radial-gradient(circle, rgba(23, 18, 13, 0.4) 0 1px, transparent 1.4px),
-    rgba(232, 217, 191, 0.62);
+    rgba(224, 219, 207, 0.58);
   background-size: 9px 9px, auto;
 }
 
@@ -1271,7 +1302,7 @@ main {
   min-height: 38px;
   padding: 0 12px;
   border: 1px solid rgba(23, 18, 13, 0.32);
-  background: rgba(232, 217, 191, 0.72);
+  background: var(--surface);
   color: var(--poster-ink);
   font-family: var(--mono);
   font-size: 12px;
@@ -1526,7 +1557,7 @@ main {
 body[data-route="category"],
 body[data-route="work"] {
   background: var(--page-background);
-  background-size: auto, auto, 22px 22px, 22px 22px, auto;
+  background-size: auto, auto, auto, 920px 520px, 860px 500px, 22px 22px, 22px 22px, auto;
 }
 
 body[data-route="category"] .paper-grain,
@@ -1629,11 +1660,7 @@ body:not(.admin-mode) .upload-nav {
   margin: clamp(24px, 3.8vw, 48px) 0;
   overflow: hidden;
   border-block: 1px solid rgba(23, 18, 13, 0.34);
-  background:
-    radial-gradient(circle, rgba(23, 18, 13, 0.28) 0 1px, transparent 1.45px),
-    radial-gradient(circle at 72% 56%, rgba(23, 18, 13, 0.12) 0 2.4px, transparent 3.8px),
-    repeating-linear-gradient(135deg, rgba(23, 18, 13, 0.038) 0 1px, transparent 1px 14px);
-  background-size: 8px 8px, 26px 26px, auto;
+  background: transparent;
 }
 
 .cover-line-scene::before,
@@ -1665,10 +1692,7 @@ body:not(.admin-mode) .upload-nav {
   display: grid;
   gap: 18px;
   padding: clamp(26px, 4vw, 44px) 0 clamp(56px, 9vw, 110px);
-  background:
-    radial-gradient(circle, rgba(23, 18, 13, 0.18) 0 0.8px, transparent 1.3px),
-    repeating-linear-gradient(135deg, rgba(23, 18, 13, 0.028) 0 1px, transparent 1px 15px);
-  background-size: 9px 9px, auto;
+  background: transparent;
 }
 
 .department-heading {
@@ -1704,7 +1728,7 @@ body:not(.admin-mode) .upload-nav {
   padding: clamp(16px, 2.2vw, 24px);
   border: 1px solid rgba(23, 18, 13, 0.22);
   border-radius: var(--dept-card-radius);
-  background: rgba(234, 220, 195, 0.58);
+  background: var(--surface);
   color: var(--ink);
   text-decoration: none;
   overflow: hidden;
@@ -1716,7 +1740,7 @@ body:not(.admin-mode) .upload-nav {
 }
 
 .department-card:hover {
-  background: rgba(239, 226, 201, 0.84);
+  background: var(--surface-strong);
   box-shadow: 0 34px 100px rgba(28, 20, 13, 0.18);
   transform: translateY(-5px);
 }
@@ -1885,10 +1909,7 @@ body:not(.admin-mode) .upload-nav {
   padding: clamp(22px, 4vw, 44px) 0 clamp(70px, 9vw, 120px);
   border-top: 5px solid var(--ink);
   border-bottom: 1px solid rgba(23, 18, 13, 0.32);
-  background:
-    radial-gradient(circle, rgba(23, 18, 13, 0.15) 0 0.75px, transparent 1.25px),
-    repeating-linear-gradient(0deg, rgba(23, 18, 13, 0.026) 0 1px, transparent 1px 12px);
-  background-size: 10px 10px, auto;
+  background: transparent;
 }
 
 .home-note-layout {
@@ -1973,7 +1994,7 @@ body:not(.admin-mode) .upload-nav {
   inset: 0;
   background:
     radial-gradient(circle, rgba(23, 18, 13, 0.48) 0 1px, transparent 1.55px),
-    rgba(216, 194, 161, 0.5);
+    rgba(214, 208, 194, 0.46);
   background-size: 10px 10px, auto;
   mix-blend-mode: multiply;
 }
@@ -2057,7 +2078,7 @@ body:not(.admin-mode) .upload-nav {
   place-items: center;
   overflow: hidden;
   border: 1px solid rgba(23, 18, 13, 0.28);
-  background: rgba(234, 220, 195, 0.68);
+  background: rgba(224, 219, 207, 0.62);
   box-shadow: 0 34px 100px rgba(20, 14, 8, 0.24);
 }
 
@@ -2067,7 +2088,7 @@ body:not(.admin-mode) .upload-nav {
   inset: 0;
   background:
     radial-gradient(circle, rgba(23, 18, 13, 0.42) 0 1px, transparent 1.45px),
-    rgba(216, 194, 161, 0.18);
+    rgba(214, 208, 194, 0.18);
   background-size: 8px 8px, auto;
   mix-blend-mode: multiply;
   pointer-events: none;

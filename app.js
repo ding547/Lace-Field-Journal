@@ -876,7 +876,13 @@ function renderRoute() {
 
   showView(elements.homeView);
   renderChrome();
-  requestAnimationFrame(updateKineticScenes);
+  requestAnimationFrame(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+    requestAnimationFrame(() => {
+      window.dispatchEvent(new Event("lace-home-visible"));
+      updateKineticScenes();
+    });
+  });
 }
 
 function updateKineticScenes() {
@@ -1531,9 +1537,18 @@ function setupCameraThread() {
     updateThread();
   }
 
+  function refreshHomeThread() {
+    if (document.body.dataset.route !== "home") return;
+    layoutKey = "";
+    targetDistance = homeScrollDistance();
+    smoothDistance = targetDistance;
+    measureThread();
+  }
+
   measureThread();
   window.addEventListener("scroll", scheduleThread, { passive: true });
   window.addEventListener("resize", measureThread);
+  window.addEventListener("lace-home-visible", refreshHomeThread);
   if (reducedMotionQuery.addEventListener) {
     reducedMotionQuery.addEventListener("change", scheduleThread);
   }
