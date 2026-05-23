@@ -117,6 +117,8 @@ const state = {
   objectUrls: new Map(),
   selectedCategory: "human",
   activeWorkId: null,
+  categoryReturn: null,
+  currentRouteName: null,
   sceneMotionTicking: false,
   pointer: { x: 0.5, y: 0.5 },
   music: {
@@ -735,6 +737,36 @@ function renderWorkScrollList(category) {
   setupWorkObserver();
 }
 
+function rememberCategoryReturn(category, workId, scrollY = window.scrollY) {
+  state.categoryReturn = {
+    categorySlug: category.slug,
+    workId,
+    scrollY,
+  };
+}
+
+function restoreCategoryPosition(category, shouldRestore) {
+  if (!shouldRestore || state.categoryReturn?.categorySlug !== category.slug) {
+    window.scrollTo({ top: 0, behavior: "auto" });
+    return;
+  }
+
+  const row = elements.workScrollList.querySelector(`[data-work-id="${CSS.escape(state.categoryReturn.workId)}"]`);
+  if (row) {
+    row.scrollIntoView({ block: "center", inline: "nearest", behavior: "auto" });
+    return;
+  }
+
+  window.scrollTo({ top: state.categoryReturn.scrollY || 0, behavior: "auto" });
+}
+
+function returnToDetailCategory() {
+  const route = parseRoute();
+  const category = route.name === "work" ? categoryBySlug(route.categorySlug) : null;
+  if (!category) return;
+  location.hash = categoryRoute(category);
+}
+
 async function requestDeleteWork(id) {
   const work = state.works.find((item) => item.id === id);
   if (!work) return;
@@ -798,6 +830,9 @@ function transitionTo(renderFn) {
 function renderDetail(category, work) {
   const src = getImageSrc(work);
   state.activeWorkId = work.id;
+  if (state.categoryReturn?.categorySlug !== category.slug || state.categoryReturn?.workId !== work.id) {
+    rememberCategoryReturn(category, work.id, null);
+  }
   elements.detailBack.href = categoryRoute(category);
   elements.detailAtmosphere.style.backgroundImage = `url("${src}")`;
   elements.detailImage.src = src;
@@ -848,6 +883,7 @@ function parseRoute() {
 
 function renderRoute() {
   const route = parseRoute();
+  const previousRouteName = state.currentRouteName;
   state.activeWorkId = null;
   document.body.dataset.route = route.name;
   document.body.classList.toggle("admin-mode", isAdminMode());
@@ -858,6 +894,7 @@ function renderRoute() {
       return;
     }
     showView(elements.studioView);
+    state.currentRouteName = route.name;
     return;
   }
 
@@ -869,7 +906,8 @@ function renderRoute() {
     }
     showView(elements.categoryView);
     renderWorkScrollList(category);
-    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
+    requestAnimationFrame(() => restoreCategoryPosition(category, previousRouteName === "work"));
+    state.currentRouteName = route.name;
     return;
   }
 
@@ -883,11 +921,13 @@ function renderRoute() {
     showView(elements.detailView);
     renderDetail(category, work);
     requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
+    state.currentRouteName = route.name;
     return;
   }
 
   showView(elements.homeView);
   renderChrome();
+  state.currentRouteName = route.name;
   requestAnimationFrame(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
     requestAnimationFrame(() => {
@@ -1249,6 +1289,33 @@ function bindRowDeletes() {
     event.preventDefault();
     event.stopPropagation();
     requestDeleteWork(button.dataset.deleteWork);
+  });
+}
+
+function bindWorkNavigation() {
+  elements.workScrollList.addEventListener("click", (event) => {
+    const link = event.target instanceof Element ? event.target.closest('a[href^="#/archive/"]') : null;
+    const row = link?.closest(".work-row");
+    if (!link || !row) return;
+
+    const route = parseRoute();
+    const category = route.name === "category" ? categoryBySlug(route.categorySlug) : null;
+    if (!category) return;
+
+    rememberCategoryReturn(category, row.dataset.workId);
+  });
+
+  elements.detailView.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    if (
+      event.target.closest(
+        "a, button, img, .detail-copy, .detail-actions, .detail-meta, .detail-atmosphere",
+      )
+    ) {
+      return;
+    }
+
+    returnToDetailCategory();
   });
 }
 
@@ -1735,6 +1802,7 @@ async function init() {
   bindUpload();
   bindDialog();
   bindRowDeletes();
+  bindWorkNavigation();
   bindTextureToggle();
   bindMusicToggle();
   bindExportAndReset();
