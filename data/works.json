@@ -64,5 +64,71 @@
       "rotate": -3,
       "scale": 1.14
     }
+  },
+  {
+    "id": "terrain-pale-current",
+    "title": "Pale Current",
+    "category": "terrain",
+    "subtitle": "Evening surf / softened horizon / Pacific wind",
+    "description": "",
+    "location": "Rialto Beach, WA",
+    "date": "2026",
+    "camera": "Olympus E-M10 Mark IV / 56mm",
+    "series": "Weather Ledger",
+    "format": "Web JPG",
+    "imageSrc": "./assets/photos/terrain/pale-current.jpg",
+    "width": 1650,
+    "height": 2200,
+    "watermark": {
+      "text": "DK",
+      "x": 23,
+      "y": 46,
+      "rotate": -1,
+      "scale": 1.03
+    }
+  },
+  {
+    "id": "terrain-breakwater-light",
+    "title": "Breakwater Light",
+    "category": "terrain",
+    "subtitle": "Evening swell / split clouds / Pacific sunset",
+    "description": "",
+    "location": "Rialto Beach, WA",
+    "date": "2026",
+    "camera": "Olympus E-M10 Mark IV / 150mm",
+    "series": "Weather Ledger",
+    "format": "Web JPG",
+    "imageSrc": "./assets/photos/terrain/breakwater-light.jpg",
+    "width": 2200,
+    "height": 1650,
+    "watermark": {
+      "text": "DK",
+      "x": 22,
+      "y": 79,
+      "rotate": 1,
+      "scale": 0.85
+    }
+  },
+  {
+    "id": "terrain-burnt-morning",
+    "title": "Burnt Morning",
+    "category": "terrain",
+    "subtitle": "Low fog / timber field / first Pacific light",
+    "description": "",
+    "location": "Near Rialto Beach, WA",
+    "date": "2026",
+    "camera": "Olympus E-M10 Mark IV / 49mm",
+    "series": "Weather Ledger",
+    "format": "Web JPG",
+    "imageSrc": "./assets/photos/terrain/burnt-morning.jpg",
+    "width": 1650,
+    "height": 2200,
+    "watermark": {
+      "text": "DK",
+      "x": 46,
+      "y": 26,
+      "rotate": 6,
+      "scale": 1.01
+    }
   }
 ]
