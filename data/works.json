@@ -1,0 +1,17 @@
+[
+  {
+    "id": "terrain-blue-distance",
+    "title": "Blue Distance",
+    "category": "terrain",
+    "subtitle": "Low horizon / Atlantic weather note",
+    "description": "",
+    "location": "Atlantic Coast",
+    "date": "2026",
+    "camera": "Olympus E-M10 Mark IV / 150mm",
+    "series": "Weather Ledger",
+    "format": "Web JPG",
+    "imageSrc": "./assets/photos/terrain/blue-distance.jpg",
+    "width": 2200,
+    "height": 1650
+  }
+]
