@@ -1,8 +1,8 @@
 :root {
   color-scheme: light;
-  --paper: #d6d0c2;
-  --paper-light: #ece5d8;
-  --paper-deep: #a99b86;
+  --paper: #ebe5d8;
+  --paper-light: #f1eadf;
+  --paper-deep: #aca391;
   --ink: #17130f;
   --muted: #584d41;
   --line: rgba(23, 19, 15, 0.28);
@@ -21,13 +21,10 @@
   --serif: Newsreader, Georgia, "Times New Roman", serif;
   --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --page-background:
-    radial-gradient(120% 78% at 18% 18%, rgba(138, 115, 127, 0.2), transparent 58%),
-    radial-gradient(108% 82% at 88% 22%, rgba(73, 99, 107, 0.22), transparent 56%),
-    radial-gradient(110% 74% at 34% 88%, rgba(135, 145, 122, 0.22), transparent 58%),
-    repeating-radial-gradient(ellipse at 48% -8%, rgba(164, 111, 95, 0.22) 0 7px, transparent 8px 42px),
-    repeating-radial-gradient(ellipse at 58% 120%, rgba(73, 99, 107, 0.18) 0 6px, transparent 7px 46px),
-    linear-gradient(rgba(23, 19, 15, 0.052) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(23, 19, 15, 0.04) 1px, transparent 1px),
+    linear-gradient(rgba(239, 233, 222, 0.22), rgba(239, 233, 222, 0.22)),
+    url("./assets/morandi-halftone-waves.svg"),
+    linear-gradient(rgba(23, 19, 15, 0.036) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 19, 15, 0.03) 1px, transparent 1px),
     var(--paper);
 }
 
@@ -44,7 +41,9 @@ body {
   margin: 0;
   overflow-x: hidden;
   background: var(--page-background);
-  background-size: auto, auto, auto, 920px 520px, 860px 500px, 22px 22px, 22px 22px, auto;
+  background-size: auto, cover, 22px 22px, 22px 22px, auto;
+  background-attachment: fixed, fixed, fixed, fixed, fixed;
+  background-position: center;
   color: var(--ink);
   font-family: var(--serif);
   letter-spacing: 0;
@@ -93,14 +92,12 @@ img {
   opacity: 0.82;
   mix-blend-mode: multiply;
   background-image:
-    radial-gradient(circle, rgba(23, 19, 15, 0.34) 0 0.62px, transparent 1px),
-    radial-gradient(circle, rgba(23, 19, 15, 0.2) 0 1.15px, transparent 1.75px),
-    radial-gradient(circle, rgba(73, 99, 107, 0.16) 0 1.7px, transparent 2.4px),
-    radial-gradient(circle, rgba(139, 69, 61, 0.14) 0 1.25px, transparent 2px),
-    repeating-radial-gradient(ellipse at 52% 18%, rgba(23, 19, 15, 0.06) 0 2px, transparent 3px 34px),
+    radial-gradient(circle, rgba(23, 19, 15, 0.22) 0 0.52px, transparent 0.9px),
+    radial-gradient(circle, rgba(23, 19, 15, 0.14) 0 0.95px, transparent 1.55px),
+    radial-gradient(circle, rgba(23, 19, 15, 0.08) 0 1.55px, transparent 2.35px),
     repeating-linear-gradient(0deg, rgba(23, 19, 15, 0.045) 0 1px, transparent 1px 6px);
-  background-position: 0 0, 7px 11px, 18px 5px, 28px 17px, 0 0, 0 0;
-  background-size: 8px 8px, 17px 17px, 31px 31px, 43px 43px, 760px 430px, auto;
+  background-position: 0 0, 7px 11px, 18px 5px, 0 0;
+  background-size: 8px 8px, 17px 17px, 31px 31px, auto;
   transition: opacity 600ms var(--ease);
 }
 
@@ -303,9 +300,9 @@ main {
   color: transparent;
   -webkit-text-fill-color: transparent;
   background-image:
-    radial-gradient(circle, rgba(23, 19, 15, 0.94) 0 0.72px, transparent 1.05px),
-    radial-gradient(circle, rgba(73, 99, 107, 0.34) 0 1.2px, transparent 1.75px),
-    linear-gradient(104deg, #19130f 0%, #5c4a42 32%, #8b453d 52%, #49636b 74%, #17130f 100%);
+    radial-gradient(circle, rgba(18, 15, 12, 0.98) 0 0.86px, transparent 1.2px),
+    radial-gradient(circle, rgba(18, 15, 12, 0.58) 0 1.35px, transparent 1.95px),
+    linear-gradient(rgba(18, 15, 12, 0.58), rgba(18, 15, 12, 0.58));
   background-size: 5px 5px, 13px 13px, 100% 100%;
   background-position: 0 0, 4px 7px, 0 0;
   -webkit-background-clip: text;
@@ -1557,7 +1554,9 @@ main {
 body[data-route="category"],
 body[data-route="work"] {
   background: var(--page-background);
-  background-size: auto, auto, auto, 920px 520px, 860px 500px, 22px 22px, 22px 22px, auto;
+  background-size: auto, cover, 22px 22px, 22px 22px, auto;
+  background-attachment: fixed, fixed, fixed, fixed, fixed;
+  background-position: center;
 }
 
 body[data-route="category"] .paper-grain,

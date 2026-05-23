@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <pattern id="dotFine" width="12" height="12" patternUnits="userSpaceOnUse">
+      <circle cx="4" cy="4" r="1.15" fill="#22323a" opacity="0.42"/>
+      <circle cx="10" cy="10" r="0.72" fill="#22323a" opacity="0.26"/>
+    </pattern>
+    <pattern id="dotBlueLarge" width="19" height="19" patternUnits="userSpaceOnUse">
+      <circle cx="6" cy="6" r="3.15" fill="#334f5b" opacity="0.58"/>
+      <circle cx="15" cy="16" r="1.2" fill="#334f5b" opacity="0.28"/>
+    </pattern>
+    <pattern id="dotRose" width="16" height="16" patternUnits="userSpaceOnUse">
+      <circle cx="5" cy="5" r="2.15" fill="#a1635a" opacity="0.52"/>
+      <circle cx="13" cy="12" r="0.9" fill="#a1635a" opacity="0.3"/>
+    </pattern>
+    <pattern id="dotSage" width="18" height="18" patternUnits="userSpaceOnUse">
+      <circle cx="6" cy="6" r="2.7" fill="#657061" opacity="0.5"/>
+      <circle cx="15" cy="14" r="1.05" fill="#657061" opacity="0.28"/>
+    </pattern>
+    <pattern id="dotInkSoft" width="14" height="14" patternUnits="userSpaceOnUse">
+      <circle cx="5" cy="5" r="2.05" fill="#243943" opacity="0.5"/>
+      <circle cx="12" cy="12" r="0.9" fill="#243943" opacity="0.24"/>
+    </pattern>
+    <filter id="paperNoise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="9"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.18"/>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="1000" fill="#ece6d9"/>
+
+  <path d="M0 55 C180 6 330 45 500 96 C690 154 845 186 1032 150 C1232 112 1390 43 1600 66 L1600 350 C1380 326 1230 350 1040 370 C830 393 650 348 470 287 C300 228 140 203 0 244 Z" fill="#7f9295" opacity="0.34"/>
+  <path d="M0 55 C180 6 330 45 500 96 C690 154 845 186 1032 150 C1232 112 1390 43 1600 66 L1600 350 C1380 326 1230 350 1040 370 C830 393 650 348 470 287 C300 228 140 203 0 244 Z" fill="url(#dotBlueLarge)" opacity="0.78"/>
+
+  <path d="M0 342 C190 365 310 320 462 258 C644 184 790 198 956 286 C1132 378 1300 394 1600 270 L1600 554 C1350 650 1145 630 948 536 C760 447 615 430 452 500 C287 571 148 608 0 572 Z" fill="#cf8c81" opacity="0.32"/>
+  <path d="M0 342 C190 365 310 320 462 258 C644 184 790 198 956 286 C1132 378 1300 394 1600 270 L1600 554 C1350 650 1145 630 948 536 C760 447 615 430 452 500 C287 571 148 608 0 572 Z" fill="url(#dotRose)" opacity="0.72"/>
+
+  <path d="M0 666 C180 596 344 576 526 616 C722 659 872 754 1045 778 C1224 803 1392 748 1600 664 L1600 1000 L0 1000 Z" fill="#78806f" opacity="0.34"/>
+  <path d="M0 666 C180 596 344 576 526 616 C722 659 872 754 1045 778 C1224 803 1392 748 1600 664 L1600 1000 L0 1000 Z" fill="url(#dotSage)" opacity="0.76"/>
+
+  <path d="M0 778 C130 728 282 748 420 816 C575 892 706 898 872 840 C1038 782 1190 788 1352 858 C1444 897 1530 908 1600 874 L1600 1000 L0 1000 Z" fill="#263f4a" opacity="0.26"/>
+  <path d="M0 778 C130 728 282 748 420 816 C575 892 706 898 872 840 C1038 782 1190 788 1352 858 C1444 897 1530 908 1600 874 L1600 1000 L0 1000 Z" fill="url(#dotInkSoft)" opacity="0.7"/>
+
+  <path d="M0 0 L430 0 C315 110 214 238 152 390 C90 544 58 708 0 844 Z" fill="url(#dotFine)" opacity="0.88"/>
+  <path d="M1600 308 C1465 340 1334 424 1246 548 C1150 683 1105 838 996 1000 L1600 1000 Z" fill="url(#dotFine)" opacity="0.32"/>
+  <rect width="1600" height="1000" filter="url(#paperNoise)" opacity="0.26"/>
+</svg>
